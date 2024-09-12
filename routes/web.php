@@ -10,10 +10,15 @@ use Illuminate\Support\Facades\Route;
 //         return view('welcome');
 //     });
 Route::get('/test', [DashboardController::class, 'test'])->name('dashboard.test');
+Route::get('/budgets/invitation/accept/{token}', [BudgetsController::class, 'acceptInvitation'])->name('budgets.invitation.accept');
 
 Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('/budgets', BudgetsController::class);
+    Route::patch('/budgets/{id}/update-active', [BudgetsController::class, 'updateActiveStatus'])->name('budgets.updateActiveStatus');
+    Route::get('/budgets/{budget}/share-budget', [BudgetsController::class, 'shareBudget'])->name('budgets.shareBudget');
+    Route::post('/budgets/{budget}/share-budget', [BudgetsController::class, 'shareBudgetInvitation'])->name('budgets.shareBudgetInvitation');
+    
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -22,5 +27,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/upload-receipt', [ExpenseController::class, 'uploadReceipt'])->name('upload.receipt');
     Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
 });
+
+// Route::get('/mailable', function () {
+//     $budget = App\Models\Budget::find(1);
+//     $token = 'placeholdertokengoeshere';
+//     $inviteLink = route('budgets.invitation.accept', $token);
+//     $fromEmail = 'admin@mail.com';
+//     $toEmail = 'jane@mail.com';
+ 
+//     return new App\Mail\ShareBudgetInvite($inviteLink, $fromEmail, $budget->title);
+// });
 
 require __DIR__.'/auth.php';

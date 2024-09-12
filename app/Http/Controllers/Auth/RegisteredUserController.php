@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\ShareBudgetInvitation;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -42,6 +43,21 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
+
+        //todo dispatch event or service checkPendingInvitations to check if user has a pending share invitation
+        $invitations = ShareBudgetInvitation::where('to_email', $user->email)
+                                            ->where('status', 'registering')
+                                            ->get();
+        // dd($invitations);
+        foreach($invitations as $invitation)
+        {
+            $budget = $invitation->budget;
+            $budget->users()->attach($user->id);
+
+            $invitation->to_user = $user->id;
+            $invitation->status = 'accepted';
+            $invitation->save();
+        }
 
         Auth::login($user);
 

@@ -12,7 +12,7 @@
 
     
     <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
-        <div class="expense w-full bg-white rounded-xl shadow-lg p-4 mb-4">
+        <div class="w-full bg-white rounded-xl shadow-lg p-4 mb-4">
             <div class="flex justify-between">
                 <span>Expenses for <strong>{{ $budget->title }}</strong></span>
                 <span>EUR</span>

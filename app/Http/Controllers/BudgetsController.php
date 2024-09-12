@@ -2,17 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ShareBudgetInvite;
 use App\Models\Budget;
+use App\Models\ShareBudgetInvitation;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class BudgetsController extends Controller
 {
     public function index(): View
     {   
-        $budgets = Budget::all('title', 'active');
-        return view('budgets.index', compact('budgets'));
+        $user = Auth::user();
+        $budgets = Budget::where('user_id', $user->id)->get();
+        $sharedBudgets = $user->budgets;
+
+        return view('budgets.index', compact('budgets', 'sharedBudgets'));
     }
 
     public function create(): View
@@ -28,7 +37,9 @@ class BudgetsController extends Controller
         ]);
 
         $validated['rest_amount'] = $request->amount;
-        $request->user()->budgets()->create($validated);
+        $validated['user_id'] = $request->user()->id;
+        $budget = new Budget();
+        $budget->create($validated);
 
         return to_route('budgets.index')->with('success', 'Budget created successfully.');
     }
@@ -50,10 +61,112 @@ class BudgetsController extends Controller
         return to_route('budgets.edit', $budget->id)->with('success', 'Budget updated successfully.');
     }
 
-    public function destroy(Budget $budget): View
+    public function destroy(Budget $budget): RedirectResponse
     {
         $budget->delete();
 
-        return view('budgets.index')->with('success', 'Budget deleted successfully.');
+        return to_route('budgets.index')->with('success', 'Budget deleted successfully.');
+    }
+
+    public function updateActiveStatus(Request $request, $id)
+    {
+        $budget = Budget::findOrFail($id);
+        
+        // Update the active status
+        $budget->active = $request->input('active');
+        $budget->save();
+
+        return redirect()->back()->with('success', 'Budget status updated!');
+    }
+
+    public function shareBudget(Budget $budget): View
+    {
+        return view('budgets.share-budget', compact('budget'));
+    }
+
+    public function ShareBudgetInvitation(Request $request, Budget $budget): RedirectResponse
+    {   
+        $request->validate([
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
+        ]);
+
+        //todo check if there is already a pending request for the budget from the user to user
+        $checkShareRequest = ShareBudgetInvitation::where('budget_id', $budget->id)
+                                                ->where('to_email', $request->email)
+                                                ->where('from_user', Auth::id())
+                                                ->get();
+
+        if(!$checkShareRequest->isEmpty())
+        {
+            return redirect()->back()->with('success', 'A share invitation has already been sent!');
+        }
+        //else skip and return invation already sent.
+        
+        //register the share request
+        $shareRequest = new ShareBudgetInvitation(); 
+        $shareRequest->budget_id = $budget->id;
+        $shareRequest->from_user = Auth::id();
+        $shareRequest->to_email = $request->email;
+        $shareRequest->status = 'created';
+
+        //todo check if user is a registered user
+        $invitedUser = User::where('email', $request->email)->get('id');
+        if(!$invitedUser->isEmpty())
+        {
+            $shareRequest->to_user = $invitedUser->id;
+        }
+
+        //create a token
+        $token = Str::random(24);
+        $shareRequest->token = $token;
+        $shareRequest->save();
+        
+        //dispathEvent send invited user a mail.
+
+        // Generate the invitation link
+        $inviteLink = route('budgets.invitation.accept', $token);
+
+        // Optionally, send the invitation via email
+        Mail::to($request->email)->send(new ShareBudgetInvite($inviteLink, Auth::user()->email, $budget->title));
+
+        $shareRequest->status = 'mailed';
+        $shareRequest->save();
+
+        return to_route('budgets.index')->with('success', 'Budget share e-mail invitation link send!');
+    }
+
+    public function acceptInvitation($token)
+    {   
+        // dd($token);
+        // Find the invitation by token
+        $invitation = ShareBudgetInvitation::where('token', $token)->first();
+        $budget = $invitation->budget;
+        $user = Auth::user();
+
+        // Check if the token exists and hasn't already been accepted
+        if (!$invitation || $invitation->status == 'accepted') {
+            return redirect()->route('/')->with('error', 'Invalid or expired invitation.');
+        }
+
+        
+        if(!$invitation->to_user)
+        {   
+            // Mark the invitation as accepted
+            $invitation->status = 'registering';
+            $invitation->save();
+            // Redirect to the registration or invitation-acceptance page
+            return redirect()->route('register')->with('message', 'Invitation accepted! Please complete your registration.');
+        }
+
+        $budget->users()->attach($user->id);
+
+        // Mark the invitation as accepted
+        $invitation->status = 'accepted';
+        $invitation->save();
+        
+        // Optionally, remove the invitation after it's been accepted
+        // $invitation->delete();
+        
+        return redirect()->route('dashboard')->with('message', 'Invitation accepted!');
     }
 }
