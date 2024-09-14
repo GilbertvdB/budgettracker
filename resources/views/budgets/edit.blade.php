@@ -4,19 +4,20 @@
         <div class="w-full bg-white rounded-xl shadow-lg p-4 mb-4">
             <strong>Create a budget:</strong>
             <!-- <div class="p-6 text-gray-900 dark:text-gray-100"><.div> -->
-            <form method="POST" action="{{ route('budgets.store') }}">
+            <form method="POST" action="{{ route('budgets.update', $budget) }}">
             @csrf
+            @method('patch')
                 <!-- Title -->
                 <div class="mt-2">
                     <x-input-label for="title" :value="__('Budget Title')" />
-                    <x-text-input id="title" class="block mt-1 w-full" type="text" name="title" :value="old('title')" placeholder="ie Budget 1" required autofocus autocomplete="title" />
+                    <x-text-input id="title" class="block mt-1 w-full" type="text" name="title" :value="old('title', $budget->title)" placeholder="ie Budget 1" required autofocus autocomplete="title" />
                     <x-input-error :messages="$errors->get('title')" class="mt-2" />
                 </div>
 
                 <!-- Amount -->
                 <div class="mt-4">
                     <x-input-label for="amount" :value="__('Budget amount')" />
-                    <x-text-input id="amount" class="block mt-1 w-full" type="number" name="amount" min="1" step="0.01" :value="old('amount')" placeholder="ie 134,56" required autocomplete="amount" />
+                    <x-text-input id="amount" class="block mt-1 w-full" type="number" name="amount" min="1" step="0.01" :value="old('amount', $budget->amount)" placeholder="ie 134,56" required autocomplete="amount" />
                     <x-input-error :messages="$errors->get('amount')" class="mt-2" />
                 </div>
 
@@ -27,7 +28,7 @@
                     </a>
                     </x-secondary-button>
                     <x-primary-button class="ms-4">
-                        {{ __('Create') }}
+                        {{ __('Update') }}
                     </x-primary-button>
                 </div>
             </form>

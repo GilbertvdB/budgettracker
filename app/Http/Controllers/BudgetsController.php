@@ -15,16 +15,16 @@ use Illuminate\Support\Str;
 
 class BudgetsController extends Controller
 {
-    public function index(): View
+    public function index(): Void
     {   
-        $user = Auth::user();
-        $budgets = Budget::where('user_id', $user->id)->get();
-        $sharedBudgets = $user->budgets;
+        // $user = Auth::user();
+        // $budgets = Budget::where('user_id', $user->id)->get();
+        // $sharedBudgets = $user->budgets;
 
-        $b = Budget::where('user_id', $user->id)->get();
-        // dd($b->count());
+        // $b = Budget::where('user_id', $user->id)->get();
+        // // dd($b->count());
 
-        return view('budgets.index', compact('budgets', 'sharedBudgets'));
+        // return view('budgets.index', compact('budgets', 'sharedBudgets'));
     }
 
     public function create(): View
@@ -44,7 +44,7 @@ class BudgetsController extends Controller
         $budget = new Budget();
         $budget->create($validated);
 
-        return to_route('budgets.index')->with('success', 'Budget created successfully.');
+        return to_route('dashboard')->with('success', 'Budget created successfully.');
     }
 
     public function edit(Budget $budget): View
@@ -61,14 +61,14 @@ class BudgetsController extends Controller
 
         $budget->update($validated);
 
-        return to_route('budgets.edit', $budget->id)->with('success', 'Budget updated successfully.');
+        return to_route('dashboard', $budget->id)->with('success', 'Budget updated successfully.');
     }
 
     public function destroy(Budget $budget): RedirectResponse
     {
         $budget->delete();
 
-        return to_route('budgets.index')->with('success', 'Budget deleted successfully.');
+        return to_route('dashboard')->with('success', 'Budget deleted successfully.');
     }
 
     public function updateActiveStatus(Request $request, $id)
@@ -121,7 +121,7 @@ class BudgetsController extends Controller
                                                 ->where('to_email', $request->email)
                                                 ->where('from_user', Auth::id())
                                                 ->get();
-
+        
         if(!$checkShareRequest->isEmpty())
         {
             return redirect()->back()->with('success', 'A share invitation has already been sent!');
@@ -134,10 +134,11 @@ class BudgetsController extends Controller
         $shareRequest->from_user = Auth::id();
         $shareRequest->to_email = $request->email;
         $shareRequest->status = 'created';
-
+        
         //todo check if user is a registered user
-        $invitedUser = User::where('email', $request->email)->get('id');
-        if(!$invitedUser->isEmpty())
+        $invitedUser = User::where('email', $request->email)->first();
+
+        if($invitedUser)
         {
             $shareRequest->to_user = $invitedUser->id;
         }
@@ -158,7 +159,7 @@ class BudgetsController extends Controller
         $shareRequest->status = 'mailed';
         $shareRequest->save();
 
-        return to_route('budgets.index')->with('success', 'Budget share e-mail invitation link send!');
+        return to_route('dashboard')->with('success', 'Budget share e-mail invitation link send!');
     }
 
     public function acceptInvitation($token)
@@ -194,5 +195,24 @@ class BudgetsController extends Controller
         // $invitation->delete();
         
         return redirect()->route('dashboard')->with('message', 'Invitation accepted!');
+    }
+
+    public function share(Budget $budget): View
+    {
+        return view('budgets.share-budget', compact('budget'));
+    }
+
+    public function unshare(Budget $budget): View
+    {   
+        // dd($budget->users);
+        return view('budgets.unshare', compact('budget'));
+    }
+
+    public function unshareBudget(Request $request, Budget $budget): RedirectResponse
+    {   
+        $user = User::find($request->email);
+        $user->budgets()->detach($budget->id);
+    
+        return redirect()->route('dashboard')->with('success', 'No longer sharing with user!');
     }
 }

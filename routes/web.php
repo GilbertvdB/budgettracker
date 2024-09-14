@@ -19,6 +19,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/budgets/{id}/update-active', [BudgetsController::class, 'updateActiveStatus'])->name('budgets.updateActiveStatus');
     Route::patch('/budgets/{id}/update-pinned', [BudgetsController::class, 'updatePinnedStatus'])->name('budgets.updatePinnedStatus');
     Route::get('/budgets/{budget}/share-budget', [BudgetsController::class, 'shareBudget'])->name('budgets.shareBudget');
+    Route::get('/budgets/{budget}/share', [BudgetsController::class, 'share'])->name('budgets.share');
+    Route::get('/budgets/{budget}/unshare', [BudgetsController::class, 'unshare'])->name('budgets.unshare');
+    Route::post('/budgets/{budget}/unshare', [BudgetsController::class, 'unshareBudget'])->name('budgets.unshareBudget');
     Route::post('/budgets/{budget}/share-budget', [BudgetsController::class, 'shareBudgetInvitation'])->name('budgets.shareBudgetInvitation');
     
 

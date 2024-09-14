@@ -15,9 +15,10 @@ class DashboardController extends Controller
 {
     public function index(): View
     {   
-        $pinnedBudgets = Auth::user()->pinnedBudgets()->get(['title', 'amount', 'rest_amount']);
+        // $pinnedBudgets = Auth::user()->pinnedBudgets()->get(['title', 'amount', 'rest_amount']);
+        $budgets = Budget::where('user_id', Auth::id())->get();
 
-        return view('dashboard', compact('pinnedBudgets'));
+        return view('dashboard', compact('budgets'));
     }
 
     public function test(): View
