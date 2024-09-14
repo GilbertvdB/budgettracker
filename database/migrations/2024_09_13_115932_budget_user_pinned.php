@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Budget;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -12,14 +13,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('budgets', function (Blueprint $table) {
+        Schema::create('budget_user_pinned', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class);
-            $table->string('title');
-            $table->decimal('amount', 2);
-            $table->decimal('rest_amount', 2)->nullable();
-            $table->integer('active')->default(1);
-            // $table->integer('max_shared_users')->default(1);
+            $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
+            $table->foreignIdFor(Budget::class)->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('budgets');
+        Schema::dropIfExists('budget_user_pinned');
     }
 };

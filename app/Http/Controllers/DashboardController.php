@@ -15,7 +15,9 @@ class DashboardController extends Controller
 {
     public function index(): View
     {   
-        return view('dashboard');
+        $pinnedBudgets = Auth::user()->pinnedBudgets()->get(['title', 'amount', 'rest_amount']);
+
+        return view('dashboard', compact('pinnedBudgets'));
     }
 
     public function test(): View

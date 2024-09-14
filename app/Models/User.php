@@ -65,4 +65,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Receipt::class);
     }
+
+    public function pinnedBudgets(): BelongsToMany
+    {
+        return $this->belongsToMany(Budget::class, 'budget_user_pinned')
+                    ->withTimestamps();
+    }
 }

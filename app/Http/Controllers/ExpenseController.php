@@ -9,15 +9,29 @@ use Illuminate\Support\Facades\Auth;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use Exception;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
 
 class ExpenseController extends Controller
 {   
     public function index(): View 
     {   
+        //ravamp show all budgets to choose expense show.
         $expenses = Receipt::whereBelongsTo(Auth::user())->latest()->get();
-        $budget = Budget::where('id', $expenses[0]['budget_id'])->first('title');
+        $budgets = Budget::where('user_id', Auth::id())->get(['id', 'title']);
 
-        return view('expenses.index', compact('expenses', 'budget'));    
+        // foreach($budgets as $budget)
+        // {
+        //     dd($budget->title);
+        // }
+        
+        if(!$expenses->isEmpty())
+        {
+            $budget = Budget::where('id', $expenses[0]['budget_id'])->first('title');
+        } else {
+            $budget = [];
+        }
+
+        return view('expenses.index', compact('expenses', 'budgets', 'budget')); 
     }
     
     public function uploadReceipt(Request $request)
@@ -146,5 +160,16 @@ class ExpenseController extends Controller
 
         // Return the array of extracted totals
         return !empty($totals) ? $totals : "No matching totals found.";
+    }
+
+    public function getExpensesByBudget($budgetId)
+    {
+        // Fetch expenses for the selected budget
+        $expenses = Receipt::where('budget_id', $budgetId)->latest()->get();
+
+        // Return the expenses as a JSON response
+        return response()->json([
+            'expenses' => $expenses
+        ]);
     }
 }

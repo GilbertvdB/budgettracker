@@ -21,6 +21,9 @@ class BudgetsController extends Controller
         $budgets = Budget::where('user_id', $user->id)->get();
         $sharedBudgets = $user->budgets;
 
+        $b = Budget::where('user_id', $user->id)->get();
+        // dd($b->count());
+
         return view('budgets.index', compact('budgets', 'sharedBudgets'));
     }
 
@@ -77,6 +80,29 @@ class BudgetsController extends Controller
         $budget->save();
 
         return redirect()->back()->with('success', 'Budget status updated!');
+    }
+
+    public function updatePinnedStatus(Request $request, $id)
+    {   
+        $user = Auth::user();
+
+        // Check if the user has already pinned the budget
+        // Pin the budget if not already pinned
+        if (!$user->pinnedBudgets()->where('budget_id', $id)->exists()) 
+        {
+            $user->pinnedBudgets()->attach($id);
+
+            return redirect()->back()->with('success', 'Budget has been pinned to the dashboard');
+        } else 
+        {
+            // Unpin the budget if the user wants to unpin it
+            if ($user->pinnedBudgets()->where('budget_id', $id)->exists()) {
+                $user->pinnedBudgets()->detach($id);
+            }
+
+            return redirect()->back()->with('success', 'Budget has been unpinned from the dashboard');
+        }
+
     }
 
     public function shareBudget(Budget $budget): View
