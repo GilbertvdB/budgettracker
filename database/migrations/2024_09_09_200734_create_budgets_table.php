@@ -16,8 +16,8 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class);
             $table->string('title');
-            $table->decimal('amount', 2);
-            $table->decimal('rest_amount', 2)->nullable();
+            $table->decimal('amount',8 ,2);
+            $table->decimal('rest_amount',8 ,2)->nullable();
             $table->integer('active')->default(1);
             // $table->integer('max_shared_users')->default(1);
             $table->timestamps();
