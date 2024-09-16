@@ -15,33 +15,21 @@
     
 <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
     @if($expenses->isEmpty())
-    <a href="{{route('budgets.create')}}" class="flex space-x-1 px-2">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-        </svg>
-        <span>Add a budget to track</span>
-    </a>
+        <span>No expenses found for the selected budget.</span>
     @else
         @foreach($expenses as $expense)
-        <!-- Expenses list -->
-        <div>
-
-            <!-- Show expenses dynamically -->
-                <div class="container mx-auto mb-4 space-y-3">
-                        <div class="w-full bg-white rounded-xl shadow-lg p-4">
-                            <div class="flex flex-col">
-                                <span>{{ $expense->updated_at->format('d F') }}</span>
-                                <div class="flex justify-between pt-2">
-                                    <img src="https://placehold.co/30" alt="receipt-icon">
-                                    <span>{{ $expense->total }}</span>
-                                </div>
-                            </div>
-                        </div>
+        <div class="container mx-auto mb-4 space-y-3">
+            <div class="w-full bg-white rounded-xl shadow-lg p-4">
+                <div class="flex flex-col">
+                    <span>{{ $expense->updated_at->format('d F') }}</span>
+                    <div class="flex justify-between pt-2">
+                        <img src="https://placehold.co/30" alt="receipt-icon">
+                        <span>{{ $expense->total }}</span>
+                    </div>
                 </div>
+            </div>
         </div>
-        @endforeach
-        <!-- Show a message if no expenses are found -->
-        <p>No expenses found for the selected budget.</p>
+    @endforeach
 </div>
 @endif
 </div>

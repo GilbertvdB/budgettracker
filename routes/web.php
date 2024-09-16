@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::post('/upload-receipt', [ExpenseController::class, 'uploadReceipt'])->name('upload.receipt');
+    Route::get('/expenses/{budget}/show', [ExpenseController::class, 'show'])->name('expenses.show');
     Route::get('/expenses/{budget}', [ExpenseController::class, 'getExpensesByBudget']);
     Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
 });

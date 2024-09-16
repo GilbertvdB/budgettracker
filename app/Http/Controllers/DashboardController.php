@@ -15,8 +15,11 @@ class DashboardController extends Controller
 {
     public function index(): View
     {   
+        $user = Auth::user();
         // $pinnedBudgets = Auth::user()->pinnedBudgets()->get(['title', 'amount', 'rest_amount']);
-        $budgets = Budget::where('user_id', Auth::id())->get();
+        $userBudgets = Budget::where('user_id', Auth::id())->get();
+        $sharedBudgets = $user->budgets;
+        $budgets = $userBudgets->merge($sharedBudgets);
 
         return view('dashboard', compact('budgets'));
     }

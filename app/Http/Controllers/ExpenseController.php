@@ -13,25 +13,16 @@ use Illuminate\Database\Eloquent\Collection;
 
 class ExpenseController extends Controller
 {   
-    public function index(): View 
+    public function index()
     {   
-        //ravamp show all budgets to choose expense show.
-        $expenses = Receipt::whereBelongsTo(Auth::user())->latest()->get();
-        $budgets = Budget::where('user_id', Auth::id())->get(['id', 'title']);
+        //
+    }
 
-        // foreach($budgets as $budget)
-        // {
-        //     dd($budget->title);
-        // }
-        
-        if(!$expenses->isEmpty())
-        {
-            $budget = Budget::where('id', $expenses[0]['budget_id'])->first('title');
-        } else {
-            $budget = [];
-        }
+    public function show(Budget $budget): View
+    {   
+        $expenses = Receipt::where('budget_id', $budget->id)->latest()->get();
 
-        return view('expenses.index', compact('expenses', 'budgets', 'budget')); 
+        return view('expenses.show', compact('budget', 'expenses'));
     }
     
     public function uploadReceipt(Request $request)
@@ -70,12 +61,6 @@ class ExpenseController extends Controller
         
         $budget->rest_amount -= floatval($total);
         $budget->save();
-        
-
-        // Process the image (e.g., using OCR)
-        // $totalCost = $this->processReceiptImage(storage_path('app/public/' . $path));
-
-        // Store the expense and update the budget (as mentioned in the previous answer)
 
         return redirect()->back()->with('success', 'Receipt uploaded successfully.');
     }

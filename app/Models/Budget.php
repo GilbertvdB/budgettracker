@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Observers\BudgetObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
-#[ObservedBy([BudgetObserver::class])]
+// #[ObservedBy([BudgetObserver::class])]
 class Budget extends Model
 {
     use HasFactory;

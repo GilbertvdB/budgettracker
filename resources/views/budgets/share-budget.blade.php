@@ -2,12 +2,11 @@
 <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
     <div class="w-full text-center bg-white rounded-xl shadow-lg p-4 mb-4">
         <strong>{{$budget->title}}</strong>    
-        <p>Enter an e-mail below and share this budget together.</p>
+        <p>Enter e-mail to share this budget.</p>
         <form method="POST" action="{{ route('budgets.shareBudget', $budget) }}">
             @csrf
             <!-- Email Address -->
-            <div class="mt-4">
-                <x-input-label for="email" :value="__('Email')" />
+            <div class="mt-1">
                 <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>

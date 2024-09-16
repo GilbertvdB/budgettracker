@@ -30,7 +30,7 @@
             @include('layouts.partials.flash-messages')
 
             <!-- Page Content -->
-            <main>
+            <main class="pb-12">
                 {{ $slot }}
             </main>
         </div>
