@@ -169,6 +169,7 @@
         </div>
     </div>  
 </div>
+<div id="debug"></div>
 </x-app-layout>
 <script>
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');   
@@ -199,6 +200,7 @@
             })
             .then(response => response.json())
             .then(data => {
+                document.getElementById('debug').innerText = JSON.stringify(data); // Show data on the page
                 // Hide the loading spinner
                 document.getElementById('spinner').classList.add('hidden');
 
@@ -221,6 +223,7 @@
 
                 // Handle error
                 console.error('Error uploading file:', error);
+                document.getElementById('debug').innerText = 'Error: ' + error.message;
                 alert('An error occurred. Please try again.');
             });
         }

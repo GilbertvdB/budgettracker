@@ -31,7 +31,7 @@ class ExpenseController extends Controller
     {   
         // Validate the image input
         $request->validate([
-            'receipt' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Restricting file types and size
+            'receipt' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096', // Restricting file types and size
         ]);
 
         info($request->all());
