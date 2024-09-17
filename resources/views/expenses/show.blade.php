@@ -21,10 +21,11 @@
         <div class="container mx-auto mb-4 space-y-3">
             <div class="w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
                 <div class="flex flex-col">
-                    <span>{{ $expense->updated_at->format('d F') }}</span>
+                    <span class="text-lg">{{ $expense->updated_at->format('d F') }}</span>
+                    <small>by {{ $expense->user->email }}</small>
                     <div class="flex justify-between pt-2">
                         <img src="https://placehold.co/30" alt="receipt-icon">
-                        <span>{{ $expense->total }}</span>
+                        <span class="text-xl">{{ $expense->total }}</span>
                     </div>
                 </div>
             </div>
