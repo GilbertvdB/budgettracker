@@ -82,18 +82,7 @@
     </div>
 @endif
 
-@if($budget->isEmpty())
-<div class="max-w-2xl mx-auto px-2">
-        <div class="w-full flex justify-center bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow-lg py-2">
-            <a href="{{route('budgets.create')}}" class="flex space-x-1 px-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-                <span>Add a budget to track</span>
-            </a>
-        </div>
-    </div>
-@else
+@if($budgets)
 <div class="py-4 space-y-4">
     @foreach( $budgets as $budget)
     <div class="max-w-2xl mx-auto px-2">
@@ -132,9 +121,9 @@
                         </div>
                         <!-- upload file -->
                         <div class="flex flex-col-l h-full px-2">
-                            <form id="uploadForm" action="{{ route('upload.receipt', $budget->id ) }}" method="POST" enctype="multipart/form-data">
+                            <form id="uploadForm" action="{{ route('upload.receipt', $budget->id ) }}" method="POST" enctype="multipart/form-data" data-budget-id="{{ $budget->id }}">
                                 @csrf
-                                <input type="file" name="receipt" id="receipt" class="hidden" onchange="handleFileUpload(event)" accept="image/*" capture="environment" required>
+                                <input type="file" name="receipt" id="receipt" class="hidden" onchange="handleFileUpload(event, {{ $budget->id }})" accept="image/*" capture="environment" required>
                             </form>
 
                             <!-- Loading Spinner (initially hidden) -->
@@ -168,6 +157,7 @@
         </div>
     </div>
     @endforeach
+@endif
     <div class="max-w-2xl mx-auto px-2">
         <div class="w-full flex justify-center bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow-lg py-2">
             <a href="{{route('budgets.create')}}" class="flex space-x-1 px-2">
@@ -178,29 +168,29 @@
             </a>
         </div>
     </div>  
-@endif
 </div>
 </x-app-layout>
 <script>
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');   
     // Function to trigger the file input click
     function triggerFileUpload() {
         document.getElementById('receipt').click();
     }
 
     // Handle the file upload and send it via AJAX
-    function handleFileUpload(event) {
+    
+    function handleFileUpload(event, budgetId) {
         console.log('handlin started')
         const file = event.target.files[0];
         if (file) {
             // Show the loading spinner
             document.getElementById('loading').classList.remove('hidden');
-
+            
             // Create FormData object to hold the file
             const formData = new FormData();
             formData.append('receipt', file);
 
-            fetch("{{ route('upload.receipt', $budget->id) }}", {
+            fetch(`/upload-receipt/${budgetId}`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,

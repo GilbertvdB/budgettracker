@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('receipts', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class);
-            $table->foreignIdFor(Budget::class);
+            $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
+            $table->foreignIdFor(Budget::class)->constrained()->onDelete('cascade');
             $table->decimal('total',8 ,2)->nullable();
             $table->longText('name');
             $table->longText('url');

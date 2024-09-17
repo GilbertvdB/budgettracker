@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class BudgetsController extends Controller
@@ -48,7 +49,7 @@ class BudgetsController extends Controller
     }
 
     public function edit(Budget $budget): View
-    {
+    {   
         return view('budgets.edit', compact('budget'));
     }
 
@@ -65,7 +66,16 @@ class BudgetsController extends Controller
     }
 
     public function destroy(Budget $budget): RedirectResponse
-    {
+    {       
+        $files = $budget->receipts;
+        if($files)
+        {
+            foreach($files as $file)
+            {   
+                Storage::disk('public')->delete($file->url);
+            }
+        }
+        
         $budget->delete();
 
         return to_route('dashboard')->with('success', 'Budget deleted successfully.');
