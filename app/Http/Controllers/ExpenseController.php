@@ -35,7 +35,14 @@ class ExpenseController extends Controller
         ]);
 
         info($request->all());
+        // Find the budget by ID
         $budget = Budget::find($id);
+        if (!$budget) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Budget not found',
+            ], 404);
+        }
 
         // Store the image in the 'receipts' directory in the public disk
         // $path = $request->file('receipt')->store('receipts', 'public');
@@ -51,18 +58,26 @@ class ExpenseController extends Controller
                 'url' => 'images/receipts/' . $filename,
             ]);
             $receipt->save();
+
+            $imagePath = public_path('storage/'.$receipt->url);
+            info('img path: '.$imagePath);
+    
+            $totalsArray = $this->ocr($imagePath);
+            $total = $totalsArray[0] ?? 0;
+            info('total: '.$total);
+    
+            $receipt->total = $total;
+            $receipt->save();
+            
+            $budget->rest_amount -= floatval($total);
+            $budget->save();
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Receipt file not found',
+            ], 400);
         }
 
-        $imagePath = public_path('storage/'.$receipt->url);
-        info('img path: '.$imagePath);
-        $totalsArray = $this->ocr($imagePath);
-        $total = $totalsArray[0];
-        info('total: '.$total);
-        $receipt->total = $total;
-        $receipt->save();
-        
-        $budget->rest_amount -= floatval($total);
-        $budget->save();
 
         return response()->json([
             'success' => true,

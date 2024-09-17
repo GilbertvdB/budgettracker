@@ -169,7 +169,7 @@
         </div>
     </div>  
 </div>
-<div id="debug"></div>
+<div id="debug" class="dark:text-grey-100 px-4"></div>
 </x-app-layout>
 <script>
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');   
@@ -179,7 +179,6 @@
     }
 
     // Handle the file upload and send it via AJAX
-    
     function handleFileUpload(event, budgetId) {
         console.log('handlin started')
         const file = event.target.files[0];
@@ -224,7 +223,7 @@
                 // Handle error
                 console.error('Error uploading file:', error);
                 document.getElementById('debug').innerText = 'Error: ' + error.message;
-                alert('An error occurred. Please try again.');
+                alert('An error occurred. Please try again.', error);
             });
         }
     }
