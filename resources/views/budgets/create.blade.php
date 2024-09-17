@@ -1,7 +1,7 @@
 <x-app-layout>
 <div class="py-1">
     <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
-        <div class="w-full bg-white rounded-xl shadow-lg p-4 mb-4">
+        <div class="w-full bg-white dark:bg-gray-800 dark:text-gray-300 rounded-xl shadow-lg p-4 mb-4">
             <strong>Create a budget:</strong>
             <!-- <div class="p-6 text-gray-900 dark:text-gray-100"><.div> -->
             <form method="POST" action="{{ route('budgets.store') }}">

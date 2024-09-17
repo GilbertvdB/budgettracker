@@ -15,7 +15,7 @@
         x-cloak
     >
         <!-- Modal content -->
-        <div class="bg-white w-full p-4 rounded-t-lg">
+        <div class="bg-white dark:bg-gray-700 w-full p-4 rounded-t-lg">
             <div class="flex justify-between">
                 <strong>Manage budget</strong>
                 <!-- Close button -->
@@ -27,7 +27,7 @@
             </div>
             <!-- Modal Options -->
             <ul class="space-y-4 text-left">
-            <li class="hover:bg-blue-100">
+            <li class="hover:bg-blue-100 dark:hover:bg-gray-800 dark:text-gray-300 dark:hover:text-gray-300 dark:hover:border-gray-700 dark:focus:text-gray-300 dark:focus:border-gray-700">
                 <!-- Expenses -->
                 <a href="{{ route('expenses.show', $budget) }}" class="flex space-x-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -36,7 +36,7 @@
                     <span>{{ __('Expenses')}}</span>
                 </a>
             </li>
-                <li class="hover:bg-blue-100">
+            <li class="hover:bg-blue-100 dark:hover:bg-gray-800 dark:text-gray-300 dark:hover:text-gray-300 dark:hover:border-gray-700 dark:focus:text-gray-300 dark:focus:border-gray-700">
                     <!-- Edit Button -->
                     <a href="{{ route('budgets.edit', $budget)}}" class="flex space-x-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -45,7 +45,7 @@
                         <span>{{ __('Edit')}}</span>
                     </a>
                 </li>
-                <li class="hover:bg-blue-100">
+                <li class="hover:bg-blue-100 dark:hover:bg-gray-800 dark:text-gray-300 dark:hover:text-gray-300 dark:hover:border-gray-700 dark:focus:text-gray-300 dark:focus:border-gray-700">
                     <!-- Share Button -->
                     <a href="{{ route('budgets.share', $budget)}}" class="flex space-x-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -55,7 +55,7 @@
                     </a>
                 </li>
                 @if(!$budget->users->isEmpty())
-                <li class="hover:bg-blue-100">
+                <li class="hover:bg-blue-100 dark:hover:bg-gray-800 dark:text-gray-300 dark:hover:text-gray-300 dark:hover:border-gray-700 dark:focus:text-gray-300 dark:focus:border-gray-700">
                     <!-- Unshare Button -->
                     <a href="{{ route('budgets.unshare', $budget)}}" class="flex space-x-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -65,7 +65,7 @@
                     </a>
                 </li>
                 @endif
-                <li class="hover:bg-blue-100">
+                <li class="hover:bg-blue-100 dark:hover:bg-gray-800 dark:text-gray-300 dark:hover:text-gray-300 dark:hover:border-gray-700 dark:focus:text-gray-300 dark:focus:border-gray-700">
                     <!-- Delete Button -->
                     <form action="{{ route('budgets.destroy', $budget)}}" method="POST" class="inline text-red-500">
                     @csrf

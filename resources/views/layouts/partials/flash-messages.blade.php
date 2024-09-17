@@ -1,7 +1,6 @@
-<!-- flash-messages.blade.php -->
-@foreach (['success' => 'green', 'message' => 'blue', 'error' => 'red'] as $msgType => $color)
+<!-- @foreach (['success' => 'green', 'message' => 'blue', 'error' => 'red'] as $msgType => $color)
     @if(session($msgType))
-        <div class="max-w-6xl mx-auto bg-{{ $color }}-100 border border-{{ $color }}-400 text-{{ $color }}-700 px-4 py-1 rounded-lg relative mt-4 alert" role="alert">
+        <div class="max-w-6xl mx-auto bg-{{ $color }}-100 border border-{{ $color }}-400 text-{{ $color }}-700 dark:text-grey-300 px-4 py-1 rounded-lg relative mt-4 alert" role="alert">
             <strong class="font-bold">{{ ucfirst($msgType) }}!</strong>
             <span class="block sm:inline">{{ session($msgType) }}</span>
             <span class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer" onclick="this.parentElement.style.display='none';">
@@ -10,7 +9,7 @@
             </span>
         </div>
     @endif
-@endforeach
+@endforeach -->
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -19,6 +18,6 @@
             alerts.forEach(function(alert) {
                 alert.style.display = 'none';
             });
-        }, 5000); // 5 seconds
+        }, 3000); // 3 seconds
     });
 </script>

@@ -10,6 +10,7 @@ use thiagoalessio\TesseractOCR\TesseractOCR;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 
 class ExpenseController extends Controller
 {   
@@ -25,16 +26,15 @@ class ExpenseController extends Controller
         return view('expenses.show', compact('budget', 'expenses'));
     }
     
-    public function uploadReceipt(Request $request)
+    public function uploadReceipt(Request $request, $id)
     {   
         // Validate the image input
         $request->validate([
             'receipt' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Restricting file types and size
         ]);
 
-        $budget = Budget::where('user_id', Auth::id())
-                        ->where('active', 1)
-                        ->first();
+        info($request->all());
+        $budget = Budget::find($id);
 
         // Store the image in the 'receipts' directory in the public disk
         // $path = $request->file('receipt')->store('receipts', 'public');
@@ -53,16 +53,20 @@ class ExpenseController extends Controller
         }
 
         $imagePath = public_path('storage/'.$receipt->url);
+        info('img path: '.$imagePath);
         $totalsArray = $this->ocr($imagePath);
         $total = $totalsArray[0];
-
+        info('total: '.$total);
         $receipt->total = $total;
         $receipt->save();
         
         $budget->rest_amount -= floatval($total);
         $budget->save();
 
-        return redirect()->back()->with('success', 'Receipt uploaded successfully.');
+        return response()->json([
+            'success' => true,
+            'message' => 'File uploaded successfully!',
+        ], 200);
     }
 
     public function ocr($imagePath)

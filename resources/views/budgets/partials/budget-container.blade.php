@@ -1,4 +1,4 @@
-<div class="w-full bg-white rounded-xl shadow-lg pl-1 pr-2 pt-2 pb-1 mb-4 {{ $budget->active == 0 ? 'opacity-50' : '' }}">
+<div class="w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg pl-1 pr-2 pt-2 pb-1 mb-4 {{ $budget->active == 0 ? 'opacity-50' : '' }}">
     <div class="flex">
     <div>
         <form method="POST" action="{{ route('budgets.updatePinnedStatus', $budget->id) }}" id="pinned-form-{{ $budget->id }}">

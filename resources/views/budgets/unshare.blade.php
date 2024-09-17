@@ -1,13 +1,13 @@
 <x-app-layout>
 <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
-    <div class="w-full text-center bg-white rounded-xl shadow-lg p-4 mb-4">
+    <div class="w-full text-center bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl shadow-lg p-4 mb-4">
         <strong>{{$budget->title}}</strong>    
         <p>Choose email to ushare.</p>
         <form method="POST" action="{{ route('budgets.unshareBudget', $budget) }}">
             @csrf
             <!-- Email Address -->
             <div class="mt-1">
-                <select name="email" id="email" class="block mt-1 mb-2 w-full border-gray-300 focus:border-sky-500 focus:ring-sky-500 rounded-md shadow-sm">
+                <select name="email" id="email" class="block mt-1 mb-2 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                 @foreach($budget->users as $user)
                     <option value="{{ $user->id }}"> {{ $user->email }} </option>
                 @endforeach

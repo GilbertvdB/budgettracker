@@ -19,7 +19,7 @@
 
 <!-- Tab Toggle -->
 <div class="max-w-2xl mx-auto">
-    <div class="flex justify-evenly bg-white rounded-xl shadow-lg p-2 mb-4">
+    <div class="flex justify-evenly bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2 mb-4">
         <!-- Tab Button for 'My Budgets' -->
         <span 
             @click="activeTab = 'owned'" 

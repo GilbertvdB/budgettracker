@@ -65,7 +65,7 @@
     </div>
 
     <!-- Mobile menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 fixed bottom-0 w-full bg-white border-t sm:hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 fixed bottom-0 w-full bg-white dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 border-t sm:hidden">
         <div class="max-w-2xl mx-auto flex justify-between h-12 pt-1">
             <!-- Budgets -->
             <div class="flex flex-col">

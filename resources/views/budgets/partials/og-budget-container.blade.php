@@ -1,4 +1,4 @@
-<div class="w-full bg-white rounded-xl shadow-lg px-4 pt-2 pb-1 mb-4 {{ $budget->active == 0 ? 'opacity-50' : '' }}">
+<div class="w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg px-4 pt-2 pb-1 mb-4 {{ $budget->active == 0 ? 'opacity-50' : '' }}">
     <div class="flex flex-col">
     <div class="flex justify-between">
         <strong>{{ $budget->title }}</strong>

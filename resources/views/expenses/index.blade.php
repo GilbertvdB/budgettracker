@@ -28,7 +28,7 @@
 
             <!-- Show expenses dynamically -->
                 <div class="container mx-auto mb-4 space-y-3">
-                        <div class="w-full bg-white rounded-xl shadow-lg p-4">
+                        <div class="w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
                             <div class="flex flex-col">
                                 <span>{{ $expense->updated_at->format('d F') }}</span>
                                 <div class="flex justify-between pt-2">
