@@ -169,7 +169,7 @@
         </div>
     </div>  
 </div>
-<div id="debug" class="dark:text-grey-100 px-4"></div>
+<div id="debug" class="text-white dark:text-grey-100 px-4"></div>
 </x-app-layout>
 <script>
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');   
@@ -178,54 +178,63 @@
         document.getElementById('receipt').click();
     }
 
-    // Handle the file upload and send it via AJAX
     function handleFileUpload(event, budgetId) {
-        console.log('handlin started')
-        const file = event.target.files[0];
-        if (file) {
-            // Show the loading spinner
-            document.getElementById('loading').classList.remove('hidden');
+    const file = event.target.files[0];
+    if (file) {
+        // Show the loading spinner
+        document.getElementById('loading').classList.remove('hidden');
+        
+        // Append initial debug message
+        const debugElement = document.getElementById('debug');
+        debugElement.innerText += 'Handling started\n'; // Add a new line for readability
+        
+        // Create FormData object to hold the file
+        const formData = new FormData();
+        formData.append('receipt', file);
+
+        fetch(`/upload-receipt/${budgetId}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Append debug messages
+            debugElement.innerText += 'Response received\n';
+            debugElement.innerText += `Response data: ${JSON.stringify(data)}\n`;
             
-            // Create FormData object to hold the file
-            const formData = new FormData();
-            formData.append('receipt', file);
+            // Hide the loading spinner
+            document.getElementById('spinner').classList.add('hidden');
 
-            fetch(`/upload-receipt/${budgetId}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('debug').innerText = JSON.stringify(data); // Show data on the page
-                // Hide the loading spinner
-                document.getElementById('spinner').classList.add('hidden');
-
-                // Handle success response
-                if (data.success) {
-                    // Show the green checkmark for success
+            // Handle success response
+            if (data.success) {
+                // Show the green checkmark for success
                 document.getElementById('success-checkmark').classList.remove('hidden');
 
                 // Optionally refresh after a delay
                 setTimeout(() => {
-                    window.location.reload();
+                    // window.location.reload();
                 }, 2000); // Delay for 2 seconds before refreshing
-                } else {
-                    alert('Upload failed. Please try again.');
-                }
-            })
-            .catch(error => {
-                // Hide the loading spinner
-                document.getElementById('loading').classList.add('hidden');
+            } else {
+                alert('Upload failed. Please try again.');
+            }
+        })
+        .catch(error => {
+            // Hide the loading spinner
+            document.getElementById('loading').classList.add('hidden');
 
-                // Handle error
-                console.error('Error uploading file:', error);
-                document.getElementById('debug').innerText = 'Error: ' + error.message;
-                alert('An error occurred. Please try again.', error);
-            });
-        }
+            // Append error messages
+            debugElement.innerText += 'Error occurred\n';
+            debugElement.innerText += `Error message: ${error.message}\n`;
+
+            // Handle error
+            console.error('Error uploading file:', error);
+            alert('An error occurred. Please try again.');
+        });
     }
+}
+
 </script>
 
