@@ -123,7 +123,7 @@
                         <div class="flex flex-col-l h-full px-2">
                             <form id="uploadForm" action="{{ route('upload.receipt', $budget->id ) }}" method="POST" enctype="multipart/form-data" data-budget-id="{{ $budget->id }}">
                                 @csrf
-                                <input type="file" name="receipt" id="receipt" class="hidden" onchange="handleFileUpload(event, {{ $budget->id }})" accept="image/*" capture="environment" required>
+                                <input type="file" name="receipt" id="receipt" class="hidden" onchange="handleFileUpload(event, {{ $budget->id }})" accept="image/*" capture="environment">
                             </form>
 
                             <!-- Loading Spinner (initially hidden) -->
@@ -180,6 +180,7 @@
 
     function handleFileUpload(event, budgetId) {
     const file = event.target.files[0];
+    console.log(file);
     if (file) {
         // Show the loading spinner
         document.getElementById('loading').classList.remove('hidden');
@@ -188,7 +189,7 @@
         const debugElement = document.getElementById('debug');
         debugElement.innerText += 'Handling started\n'; // Add a new line for readability
          // Display file details
-         debugElement.innerText += `File selected:\n`;
+        debugElement.innerText += `File selected:\n`;
         debugElement.innerText += `Name: ${file.name}\n`;
         debugElement.innerText += `Size: ${file.size} bytes\n`;
         debugElement.innerText += `Type: ${file.type}\n`;

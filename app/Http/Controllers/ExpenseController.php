@@ -31,7 +31,7 @@ class ExpenseController extends Controller
     {   
         // Validate the image input
         info($request->all());
-        
+
         $request->validate([
             'receipt' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096', // Restricting file types and size
         ]);
@@ -103,10 +103,13 @@ class ExpenseController extends Controller
             $processed = $this->extractTotalAmountFromString($text);
             if($processed == "No matching totals found.")
             { 
-                info($processed); 
+                info($processed);
+                // todo log item for review
+                return null;
+            } else {
+                return $processed;
             }
 
-            return $processed;
 
         } catch (Exception $e) {
             info('error :' . $e->getMessage());
