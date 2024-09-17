@@ -30,11 +30,12 @@ class ExpenseController extends Controller
     public function uploadReceipt(Request $request, $id)
     {   
         // Validate the image input
+        info($request->all());
+        
         $request->validate([
             'receipt' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096', // Restricting file types and size
         ]);
 
-        info($request->all());
         // Find the budget by ID
         $budget = Budget::find($id);
         if (!$budget) {

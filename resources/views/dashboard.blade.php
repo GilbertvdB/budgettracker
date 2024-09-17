@@ -187,10 +187,24 @@
         // Append initial debug message
         const debugElement = document.getElementById('debug');
         debugElement.innerText += 'Handling started\n'; // Add a new line for readability
+         // Display file details
+         debugElement.innerText += `File selected:\n`;
+        debugElement.innerText += `Name: ${file.name}\n`;
+        debugElement.innerText += `Size: ${file.size} bytes\n`;
+        debugElement.innerText += `Type: ${file.type}\n`;
         
         // Create FormData object to hold the file
         const formData = new FormData();
         formData.append('receipt', file);
+
+        // Convert FormData to string
+        let formDataString = 'FormData contents:\n';
+        formData.forEach((value, key) => {
+            formDataString += `${key}: ${value}\n`;
+        });
+        
+        // Append FormData string to debug element
+        debugElement.innerText += formDataString;
 
         fetch(`/upload-receipt/${budgetId}`, {
             method: 'POST',
