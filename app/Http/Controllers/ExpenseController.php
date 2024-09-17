@@ -27,17 +27,18 @@ class ExpenseController extends Controller
         return view('expenses.show', compact('budget', 'expenses'));
     }
     
-    public function uploadReceipt(Request $request, $id)
+    public function uploadReceipt(Request $request)
     {   
         // Validate the image input
         info($request->all());
 
         $request->validate([
-            'receipt' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096', // Restricting file types and size
+            'receipt' => 'required|image|mimes:jpeg,png,jpg,gif|max:2024', // Restricting file types and size
+            'budget_id' => 'required', // Restricting file types and size
         ]);
 
         // Find the budget by ID
-        $budget = Budget::find($id);
+        $budget = Budget::find($request->budget_id);
         if (!$budget) {
             return response()->json([
                 'success' => false,

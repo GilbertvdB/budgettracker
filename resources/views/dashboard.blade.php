@@ -123,14 +123,15 @@
                         <div class="flex flex-col-l h-full px-2">
                             <form id="uploadForm" action="{{ route('upload.receipt', $budget->id ) }}" method="POST" enctype="multipart/form-data" data-budget-id="{{ $budget->id }}">
                                 @csrf
-                                <input type="file" name="receipt" id="receipt" class="my-image-field hidden" onchange="handleFileUpload(event, {{ $budget->id }})" accept="image/*" capture="environment">
+                                <input type="file" name="receipt" id="receipt" class="my-image-field hidden" onchange="compressAndUploadImage(event)" accept="image/*" capture="environment">
                             </form>
 
                             <!-- Loading Spinner (initially hidden) -->
                             <div id="loading" class="hidden fixed inset-0 bg-gray-600 bg-opacity-60 flex items-center justify-center z-50">
                                 <div id="spinner" class="flex flex-col items-center">
                                     <div class="spinner border-t-4 border-b-4 border-blue-500 rounded-full w-12 h-12"></div>
-                                    <p class="text-white text-lg ml-4">Uploading, please wait...</p>
+                                    <p id="compressing" class="text-white text-lg ml-4">Compressing, please wait...</p>
+                                    <p id="uploading" class="hidden text-white text-lg ml-4">Uploading, please wait...</p>
                                 </div>
                                 <div id="success-checkmark" class="hidden flex flex-col items-center">
                                     <!-- Green Checkmark SVG -->
@@ -172,43 +173,114 @@
 <div id="debug" class="text-white dark:text-grey-100 px-4"></div>
 </x-app-layout>
 <script>
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');   
-    // Function to trigger the file input click
-    function triggerFileUpload() {
-        document.getElementById('receipt').click();
-    }
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');   
+// Function to trigger the file input click
+function triggerFileUpload() {
+    document.getElementById('receipt').click();
+}
 
-    function handleFileUpload(event, budgetId) {
-    handleImageCompression('.my-image-field');
+function compressAndUploadImage(event) {
+    const inputElement = event.target; // Get the input element that triggered the event
+    const formElement = inputElement.closest('form'); // Find the closest form element (ancestor)
+
+    // Retrieve the data-budget-id value from the form
+    const budgetId = formElement.getAttribute('data-budget-id');
+    console.log('Budget ID:', budgetId);
+
     const file = event.target.files[0];
-    console.log(file);
-    if (file) {
-        // Show the loading spinner
-        document.getElementById('loading').classList.remove('hidden');
-        
-        // Append initial debug message
-        const debugElement = document.getElementById('debug');
-        debugElement.innerText += 'Handling started\n'; // Add a new line for readability
-         // Display file details
-        debugElement.innerText += `File selected:\n`;
-        debugElement.innerText += `Name: ${file.name}\n`;
-        debugElement.innerText += `Size: ${file.size} bytes\n`;
-        debugElement.innerText += `Type: ${file.type}\n`;
-        
-        // Create FormData object to hold the file
-        const formData = new FormData();
-        formData.append('receipt', file);
+    
+    if (!file || !file.type.startsWith('image/')) {
+        alert('Please upload a valid image file.');
+        return;
+    }
+    document.getElementById('loading').classList.remove('hidden');
 
-        // Convert FormData to string
-        let formDataString = 'FormData contents:\n';
-        formData.forEach((value, key) => {
-            formDataString += `${key}: ${value}\n`;
-        });
-        
-        // Append FormData string to debug element
-        debugElement.innerText += formDataString;
+    console.log('Original file selected:', file);
+    console.log('Original file size (in bytes):', file.size);
 
-        fetch(`/upload-receipt/${budgetId}`, {
+    const maxWidth = 1080;
+    const maxHeight = 1920;
+    const dpi = 96; // DPI (Dots per inch)
+    const bitDepth = 24; // 24-bit color
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+        const img = new Image();
+
+        img.onload = function () {
+            const width = img.width;
+            const height = img.height;
+
+            console.log(`Original image dimensions: ${width}x${height}`);
+
+            let newWidth = width;
+            let newHeight = height;
+
+            // Check if the image needs resizing
+            if (width > maxWidth || height > maxHeight) {
+                const aspectRatio = width / height;
+
+                if (width > height) {
+                    newWidth = maxWidth;
+                    newHeight = Math.round(maxWidth / aspectRatio);
+                } else {
+                    newHeight = maxHeight;
+                    newWidth = Math.round(maxHeight * aspectRatio);
+                }
+
+                console.log(`Resizing image to: ${newWidth}x${newHeight}`);
+            } else {
+                console.log('No resizing required.');
+            }
+
+            // Create canvas to resize the image
+            const canvas = document.createElement('canvas');
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+
+            const ctx = canvas.getContext('2d');
+
+            // Apply DPI transformation by adjusting the canvas' resolution
+            canvas.style.width = `${newWidth / dpi * 96}px`; // Horizontal DPI = 96
+            canvas.style.height = `${newHeight / dpi * 96}px`; // Vertical DPI = 96
+
+            // Draw the resized image on the canvas
+            ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+            // Convert canvas to a Blob (lossy compression, jpeg format with quality 0.8)
+            canvas.toBlob(
+                function (blob) {
+                    console.log('Image compression complete.');
+                    console.log('Compressed image size (in bytes):', blob.size);
+
+                    // Create a FormData object to send via AJAX
+                    const formData = new FormData();
+                    formData.append('receipt', blob, file.name); // append the compressed image
+                    formData.append('budget_id', budgetId); // append the budget ID from data attribute
+
+                    // Send the compressed image via AJAX to the server
+                    console.log('here we upload formData');
+                    uploadImageToServer(formData);
+                },
+                'image/jpeg', // lossy compression in jpeg format
+                0.8 // Quality level (between 0.0 and 1.0)
+            );
+        };
+
+        img.src = event.target.result;
+    };
+
+    reader.readAsDataURL(file);
+}
+
+// Example AJAX function to send the compressed image to Laravel backend
+function uploadImageToServer(formData) {
+    console.log('Starting image upload...');
+    document.getElementById('compressing').classList.add('hidden');
+    document.getElementById('uploading').classList.remove('hidden');
+    
+    fetch(`/upload-receipt`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
@@ -218,8 +290,8 @@
         .then(response => response.json())
         .then(data => {
             // Append debug messages
-            debugElement.innerText += 'Response received\n';
-            debugElement.innerText += `Response data: ${JSON.stringify(data)}\n`;
+            // debugElement.innerText += 'Response received\n';
+            // debugElement.innerText += `Response data: ${JSON.stringify(data)}\n`;
             
             // Hide the loading spinner
             document.getElementById('spinner').classList.add('hidden');
@@ -231,7 +303,7 @@
 
                 // Optionally refresh after a delay
                 setTimeout(() => {
-                    // window.location.reload();
+                    window.location.reload();
                 }, 2000); // Delay for 2 seconds before refreshing
             } else {
                 alert('Upload failed. Please try again.');
@@ -242,61 +314,13 @@
             document.getElementById('loading').classList.add('hidden');
 
             // Append error messages
-            debugElement.innerText += 'Error occurred\n';
-            debugElement.innerText += `Error message: ${error.message}\n`;
+            // debugElement.innerText += 'Error occurred\n';
+            // debugElement.innerText += `Error message: ${error.message}\n`;
 
             // Handle error
             console.error('Error uploading file:', error);
             alert('An error occurred. Please try again.');
         });
-    }
-}
-
-function handleImageCompression(inputSelector, quality = 0.5, outputType = 'image/jpeg') {
-    const compressImage = async (file, { quality = 1, type = file.type }) => {
-        // Get image data
-        const imageBitmap = await createImageBitmap(file);
-
-        // Draw to canvas
-        const canvas = document.createElement('canvas');
-        canvas.width = imageBitmap.width;
-        canvas.height = imageBitmap.height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(imageBitmap, 0, 0);
-
-        // Convert canvas to Blob
-        const blob = await new Promise((resolve) =>
-            canvas.toBlob(resolve, type, quality)
-        );
-
-        // Convert Blob to File
-        return new File([blob], file.name, {
-            type: blob.type,
-        });
-    };
-
-    const input = document.querySelector(inputSelector);
-
-    input.addEventListener('change', async (e) => {
-        // Get the selected file
-        const file = e.target.files[0];
-
-        // If no file or not an image, return
-        if (!file || !file.type.startsWith('image')) return;
-
-        // Compress the image file
-        const compressedFile = await compressImage(file, {
-            quality,
-            type: outputType,
-        });
-
-        // Create a new DataTransfer object to hold the compressed file
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(compressedFile);
-
-        // Set the file input value to the compressed file
-        e.target.files = dataTransfer.files;
-    });
 }
 
 </script>
