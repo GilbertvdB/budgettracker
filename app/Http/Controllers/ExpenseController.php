@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\App;
 
 class ExpenseController extends Controller
 {   
@@ -71,17 +72,23 @@ class ExpenseController extends Controller
 
     public function ocr($imagePath)
     {   
-        $path = 'C:\Users\Gilbert\AppData\Local\Programs\Tesseract-OCR\tesseract.exe';
-   
         try {
+
             $ocr = new TesseractOCR($imagePath);
-            $ocr->executable($path);
+            
+            if (App::environment('local')) {
+                $path = env('OCR_LOCAL');
+                $ocr->executable($path);
+            }
+            
             $text = $ocr->run();
             
             // dd($text);
             $processed = $this->extractTotalAmountFromString($text);
             if($processed == "No matching totals found.")
-            { info($processed); }
+            { 
+                info($processed); 
+            }
 
             return $processed;
 
