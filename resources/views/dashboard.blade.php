@@ -82,6 +82,18 @@
     </div>
 @endif
 
+@if($budget->isEmpty())
+<div class="max-w-2xl mx-auto px-2">
+        <div class="w-full flex justify-center bg-white dark:bg-gray-800 dark:text-gray-100 rounded-xl shadow-lg py-2">
+            <a href="{{route('budgets.create')}}" class="flex space-x-1 px-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <span>Add a budget to track</span>
+            </a>
+        </div>
+    </div>
+@else
 <div class="py-4 space-y-4">
     @foreach( $budgets as $budget)
     <div class="max-w-2xl mx-auto px-2">
@@ -165,8 +177,8 @@
                 <span>Add a budget to track</span>
             </a>
         </div>
-    </div>
-
+    </div>  
+@endif
 </div>
 </x-app-layout>
 <script>
@@ -178,6 +190,7 @@
 
     // Handle the file upload and send it via AJAX
     function handleFileUpload(event) {
+        console.log('handlin started')
         const file = event.target.files[0];
         if (file) {
             // Show the loading spinner
@@ -204,10 +217,10 @@
                     // Show the green checkmark for success
                 document.getElementById('success-checkmark').classList.remove('hidden');
 
-// Optionally refresh after a delay
-setTimeout(() => {
-    window.location.reload();
-}, 2000); // Delay for 2 seconds before refreshing
+                // Optionally refresh after a delay
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000); // Delay for 2 seconds before refreshing
                 } else {
                     alert('Upload failed. Please try again.');
                 }
