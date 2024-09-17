@@ -123,7 +123,7 @@
                         <div class="flex flex-col-l h-full px-2">
                             <form id="uploadForm" action="{{ route('upload.receipt', $budget->id ) }}" method="POST" enctype="multipart/form-data" data-budget-id="{{ $budget->id }}">
                                 @csrf
-                                <input type="file" name="receipt" id="receipt" class="hidden" onchange="handleFileUpload(event, {{ $budget->id }})" accept="image/*" capture="environment">
+                                <input type="file" name="receipt" id="receipt" class="my-image-field hidden" onchange="handleFileUpload(event, {{ $budget->id }})" accept="image/*" capture="environment">
                             </form>
 
                             <!-- Loading Spinner (initially hidden) -->
@@ -179,6 +179,7 @@
     }
 
     function handleFileUpload(event, budgetId) {
+    handleImageCompression('.my-image-field');
     const file = event.target.files[0];
     console.log(file);
     if (file) {
@@ -249,6 +250,53 @@
             alert('An error occurred. Please try again.');
         });
     }
+}
+
+function handleImageCompression(inputSelector, quality = 0.5, outputType = 'image/jpeg') {
+    const compressImage = async (file, { quality = 1, type = file.type }) => {
+        // Get image data
+        const imageBitmap = await createImageBitmap(file);
+
+        // Draw to canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = imageBitmap.width;
+        canvas.height = imageBitmap.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(imageBitmap, 0, 0);
+
+        // Convert canvas to Blob
+        const blob = await new Promise((resolve) =>
+            canvas.toBlob(resolve, type, quality)
+        );
+
+        // Convert Blob to File
+        return new File([blob], file.name, {
+            type: blob.type,
+        });
+    };
+
+    const input = document.querySelector(inputSelector);
+
+    input.addEventListener('change', async (e) => {
+        // Get the selected file
+        const file = e.target.files[0];
+
+        // If no file or not an image, return
+        if (!file || !file.type.startsWith('image')) return;
+
+        // Compress the image file
+        const compressedFile = await compressImage(file, {
+            quality,
+            type: outputType,
+        });
+
+        // Create a new DataTransfer object to hold the compressed file
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(compressedFile);
+
+        // Set the file input value to the compressed file
+        e.target.files = dataTransfer.files;
+    });
 }
 
 </script>
