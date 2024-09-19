@@ -142,39 +142,42 @@ class ExpenseController extends Controller
     }
 
     function extractTotalAmountFromString($text)
-    {
+    {   
+        info('init extract...');
         // Initialize an array to store the extracted totals
         $totals = [];
 
-        // Pattern to match "Totaal" followed by an amount (xx,xx format)
-        // Note: Adjusted to handle both ',' and '.' as decimal separators
-        $pattern = '/\bTotaal\s+(\d{1,3}\s*\d{0,2}[.,]?\d{2})\b/i';
+        // Pattern to match variations of "Total" or "Totaal" followed by an amount (xx,xx, x,xx, xx xx format)
+        $pattern = '/\b(total|totaal)\s*[.:\-]?\s*(\d{1,3}(?:[.,\s]\d{2}))\b/i';
 
         // Split the input text into lines
         $lines = explode("\n", $text);
+        info('lines:');
+        info($lines);
 
         // Loop through each line
+        info('processing lines...');
         foreach ($lines as $line) {
             // Convert the line to lowercase to perform a case-insensitive check for "sub"
             $lowerLine = strtolower($line);
 
-            // Check if the line matches the "Totaal" pattern and does not contain "sub"
-            if (preg_match($pattern, $line) && strpos($lowerLine, 'sub') === false) {
-                // Extract the amount
-                preg_match($pattern, $line, $matches);
-                
-                $amount = $matches[1];
-
-                // Remove any spaces and replace commas with periods
-                $amount = str_replace(' ', '.', $amount); // Remove all spaces
-                $amount = str_replace(',', '.', $amount); // Replace comma with period
+            // Check if the line matches the pattern and does not contain "sub"
+            if (preg_match($pattern, $lowerLine, $matches) && strpos($lowerLine, 'sub') === false) {
+                info('matching pattern and filtering...');
+                // Extract the amount from the second capture group
+                $amount = $matches[2];
+                info('cleaning matches results...');
+                // Remove any thousand separators (spaces or dots) and replace commas with periods
+                $amount = str_replace(' ', '.', $amount);  // Replace spaces between numbers with periods
+                $amount = str_replace(',', '.', $amount);  // Convert comma to period as decimal separator
 
                 // Add the extracted amount to the totals array
                 $totals[] = $amount;
             }
         }
-
-        // Return the array of extracted totals
+        info('totals extracted:');
+        info($totals);
+        // Return the array of extracted totals, or a message if no totals are found
         return !empty($totals) ? $totals : "No matching totals found.";
     }
 
