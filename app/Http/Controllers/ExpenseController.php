@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Budget;
 use App\Models\Receipt;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use thiagoalessio\TesseractOCR\TesseractOCR;
@@ -64,7 +65,7 @@ class ExpenseController extends Controller
             $imagePath = public_path('storage/'.$receipt->url);
             info('img path: '.$imagePath);
     
-            $totalsArray = $this->ocr($imagePath);
+            $totalsArray = $this->ocr($imagePath, $receipt);
             $total = $totalsArray[0] ?? 0;
             info('total: '.$total);
     
@@ -87,7 +88,7 @@ class ExpenseController extends Controller
         ], 200);
     }
 
-    public function ocr($imagePath)
+    public function ocr($imagePath, $receipt)
     {   
         try {
 
@@ -106,6 +107,13 @@ class ExpenseController extends Controller
             { 
                 info($processed);
                 // todo log item for review
+                Review::create([
+                    'receipt_id' => $receipt->id,
+                    'image_url' => $receipt->url,
+                    'ocr_text' => $text,
+                    'total' => 0,
+                ]);
+                
                 return null;
             } else {
                 return $processed;
@@ -180,6 +188,7 @@ class ExpenseController extends Controller
         // Return the array of extracted totals, or a message if no totals are found
         return !empty($totals) ? $totals : "No matching totals found.";
     }
+
 
     public function getExpensesByBudget($budgetId)
     {
