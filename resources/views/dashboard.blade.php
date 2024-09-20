@@ -128,9 +128,9 @@
                         </div>
                         <!-- upload file -->
                         <div class="flex flex-col-l h-full px-2">
-                            <form id="uploadForm" action="{{ route('upload.receipt', $budget->id ) }}" method="POST" enctype="multipart/form-data" data-budget-id="{{ $budget->id }}">
+                            <form id="uploadForm-{{ $budget->id }}" action="{{ route('upload.receipt', $budget->id ) }}" method="POST" enctype="multipart/form-data" data-budget-id="{{ $budget->id }}">
                                 @csrf
-                                <input type="file" name="receipt" id="receipt" class="my-image-field hidden" onchange="compressAndUploadImage(event)" accept="image/*" capture="environment">
+                                <input type="file" name="receipt" id="receipt-{{ $budget->id }}" class="my-image-field hidden" onchange="compressAndUploadImage(event)" accept="image/*" capture="environment">
                             </form>
 
                             <!-- Loading Spinner (initially hidden) -->
@@ -152,7 +152,7 @@
                             
                             <div class="pb-1">
                                 <!-- uplobad receipt -->
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="height:40px" class="cursor-pointer" onclick="triggerFileUpload()">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="height:40px" class="cursor-pointer" onclick="triggerFileUpload({{$budget->id}})">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
                                 </svg>
@@ -182,8 +182,8 @@
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');   
 // Function to trigger the file input click
-function triggerFileUpload() {
-    document.getElementById('receipt').click();
+function triggerFileUpload(budgetId) {
+    document.getElementById('receipt-' + budgetId).click();
 }
 
 function compressAndUploadImage(event) {
