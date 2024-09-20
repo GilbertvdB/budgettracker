@@ -62,25 +62,9 @@
     0%, 100% { transform: none; }
     50% { transform: scale3d(1.1, 1.1, 1); }
 }
-
-
 </style>
-    
-@if(session('success'))
-    <div class="slide-in-right">
-        <div class="alert max-w-6xl mx-auto bg-green-100 border border-green-400 text-green-700 px-2 py-1 rounded-lg relative mt-4" role="alert">
-            <div class="flex justify-between items-center">
-                <div class="flex space-x-2 items-center">
-                <strong class="font-bold">Success!</strong>
-                <span class="block sm:inline">{{ session('success') }} </span>
-                </div>
-                <span onclick="this.parentElement.parentElement.style.display='none';">
-                    <svg class="fill-current h-6 w-6 text-green-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 5.652a1 1 0 010 1.414L11.414 10l2.934 2.934a1 1 0 11-1.414 1.414L10 11.414l-2.934 2.934a1 1 0 01-1.414-1.414L8.586 10 5.652 7.066a1 1 0 111.414-1.414L10 8.586l2.934-2.934a1 1 0 011.414 0z"/></svg>
-                </span>
-            </div>
-        </div>
-    </div>
-@endif
+
+<x-flash-message/>
 
 @if($budgets)
 <div class="py-4 space-y-4">
