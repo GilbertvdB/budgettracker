@@ -27,7 +27,7 @@ class ExpenseController extends Controller
         return view('expenses.show', compact('budget', 'expenses'));
     }
     
-    public function uploadReceipt(Request $request)
+    public function uploadReceipt(Request $request): JsonResponse
     {   
         // Validate the image input
         info($request->all());

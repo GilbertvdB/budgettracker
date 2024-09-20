@@ -14,14 +14,13 @@
         </div>
     </div>
 </div>  
-@endif
 <style>
-    html, body {
+  html, body {
     overflow-x: hidden;
-}
-/* Slide-in-right animation */
-@keyframes slide-in-right {
-  0% {
+  }
+  /* Slide-in-right animation */
+  @keyframes slide-in-right {
+    0% {
     transform: translateX(100%);
     opacity: 0;
   }
@@ -53,19 +52,20 @@
 }
 </style>
 <script>
-    // Auto-close after 4 seconds
+  // Auto-close after 4 seconds
+  setTimeout(() => {
+    closeAlert();
+  }, 4000);
+  
+  function closeAlert() {
+    const alert = document.getElementById('alertMessage');
+    // Add the slide-out-right animation
+    alert.classList.add('slide-out-right');
+    
+    // Remove the element from the DOM after the animation completes
     setTimeout(() => {
-        closeAlert();
-    }, 4000);
-
-    function closeAlert() {
-        const alert = document.getElementById('alertMessage');
-        // Add the slide-out-right animation
-        alert.classList.add('slide-out-right');
-        
-        // Remove the element from the DOM after the animation completes
-        setTimeout(() => {
-            alert.remove();
-        }, 500); // 500ms to match the animation duration
-    }
+      alert.remove();
+    }, 500); // 500ms to match the animation duration
+  }
 </script>
+@endif

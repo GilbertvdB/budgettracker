@@ -64,6 +64,8 @@
 }
 </style>
 
+<div class="outer-container">
+
 <x-flash-message/>
 
 @if($budgets)
@@ -159,9 +161,9 @@
                 <span>Add a budget to track</span>
             </a>
         </div>
-    </div>  
+    </div>
 </div>
-<div id="debug" class="text-white dark:text-grey-100 px-4"></div>
+</div>
 </x-app-layout>
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');   
