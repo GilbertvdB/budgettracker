@@ -26,9 +26,9 @@
                     </div>
                 </header>
             @endisset
-            
-            @include('layouts.partials.flash-messages')
 
+            <x-feedback />
+            
             <!-- Page Content -->
             <main class="pb-12">
                 {{ $slot }}

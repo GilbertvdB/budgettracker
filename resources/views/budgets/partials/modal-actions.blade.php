@@ -97,4 +97,8 @@
     bottom: 0; /* Slide up into view */
     transition: bottom 5s ease;
 }
+
+[x-cloak] {
+    display: none;
+}
 </style>

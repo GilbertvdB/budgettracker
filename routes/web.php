@@ -3,6 +3,7 @@
 use App\Http\Controllers\BudgetsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/expenses/{budget}/show', [ExpenseController::class, 'show'])->name('expenses.show');
     Route::get('/expenses/{budget}', [ExpenseController::class, 'getExpensesByBudget']);
     Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
+
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+
+
 });
 
 // Route::get('/mailable', function () {
