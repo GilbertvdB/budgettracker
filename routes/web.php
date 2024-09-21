@@ -35,9 +35,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/expenses/{budget}', [ExpenseController::class, 'getExpensesByBudget']);
     Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
 
+    Route::resource('/expenses', ExpenseController::class)->except(['index', 'show']);
     Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
-
-
 });
 
 // Route::get('/mailable', function () {
@@ -51,3 +50,4 @@ Route::middleware('auth')->group(function () {
 // });
 
 require __DIR__.'/auth.php';
+require __DIR__.'/admin.php';

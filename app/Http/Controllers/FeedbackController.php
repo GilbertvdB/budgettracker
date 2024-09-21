@@ -3,20 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Feedback;
-
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class FeedbackController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): View
     {
         $feedbacks = Feedback::paginate(10);
 
-        return view('admin.feedback.index', compact('feedbacks'));
+        return view('admin.feedbacks.index', compact('feedbacks'));
     }
 
     /**
@@ -30,7 +32,7 @@ class FeedbackController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {   
         $validated = $request->validate([
             'message' => 'required|max:255',
@@ -48,9 +50,9 @@ class FeedbackController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
+    public function show(Feedback $feedback): View
+    {   
+        return view('admin.feedbacks.show', compact('feedback'));
     }
 
     /**
@@ -72,8 +74,10 @@ class FeedbackController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Feedback $feedback): RedirectResponse
     {
-        //
+        $feedback->delete();
+
+        return to_route('admin.feedbacks.index')->with('success', 'Feedback deleted!');
     }
 }
