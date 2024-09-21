@@ -5,7 +5,7 @@
                 {{ __('Users') }}
             </h2>
             <a href="{{ route('admin.users.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                {{ __('Add Student') }}
+                {{ __('Add User') }}
             </a>
         </div>
     </x-slot>
