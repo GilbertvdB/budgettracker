@@ -62,7 +62,7 @@ class BudgetsController extends Controller
 
         $budget->update($validated);
 
-        return to_route('dashboard', $budget->id)->with('success', 'Budget updated successfully.');
+        return to_route('dashboard')->with('success', 'Budget updated successfully.');
     }
 
     public function destroy(Budget $budget): RedirectResponse
