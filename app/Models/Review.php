@@ -10,10 +10,12 @@ class Review extends Model
     use HasFactory;
 
     public $fillable = [
-        'image_url',
-        'ocr_text',
         'receipt_id',
         'status',
-        'total',
     ];
+
+    public function receipt()
+    {
+        return $this->belongsTo(Receipt::class);
+    }
 }

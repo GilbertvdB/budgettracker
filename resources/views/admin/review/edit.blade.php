@@ -4,7 +4,7 @@
             <!-- Left Column (Receipt Image) -->
             <div class="w-full sm:w-1/2 border box-border">
                 <div class="receipt-image border">
-                    <img src="{{ asset($review->image_url) }}" alt="receipt-img" class="w-full">
+                    <img src="{{ asset($review->receipt->url) }}" alt="receipt-img" class="w-full">
                 </div>
             </div>
 
@@ -12,7 +12,7 @@
             <div class="w-full sm:w-1/2 border box-border">
                 <div class="ocr-text border">
                     <div class="text-xs sm:text-base p-4 rounded-lg bg-gray-700 text-green-500 h-full">
-                        <pre>{{ $review->ocr_text }}</pre>
+                        <pre>{{ $review->receipt->ocr_text }}</pre>
                     </div>
                 </div>
 
@@ -27,7 +27,7 @@
                                 <!-- Total -->
                                 <div class="mt-2">
                                     <x-input-label for="total" :value="__('Total')" />
-                                    <x-text-input id="total" class="block mt-1 w-full" type="number" name="total" min="1" step="0.01" :value="old('total', $review->total)" placeholder="ie 134,56" required autocomplete="total" />
+                                    <x-text-input id="total" class="block mt-1 w-full" type="number" name="total" min="1" step="0.01" :value="old('total', $review->receipt->total)" placeholder="ie 134,56" required autocomplete="total" />
                                     <x-input-error :messages="$errors->get('total')" class="mt-2" />
                                 </div>
 

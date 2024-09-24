@@ -11,7 +11,7 @@ Route::get('/slider', function () {
     return view('budgets.partials.slider');
 });
 
-Route::get('/test', [DashboardController::class, 'test'])->name('dashboard.test');
+// Route::get('/test', [DashboardController::class, 'test'])->name('dashboard.test');
 Route::get('/budgets/invitation/accept/{token}', [BudgetsController::class, 'acceptInvitation'])->name('budgets.invitation.accept');
 
 Route::middleware('auth')->group(function () {
@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::post('/upload-receipt', [ExpenseController::class, 'uploadReceipt'])->name('upload.receipt');
+    Route::post('/upload-incorrect', [ExpenseController::class, 'uploadTotalIncorrect'])->name('upload.total.incorrect');
     Route::get('/expenses/{budget}/show', [ExpenseController::class, 'show'])->name('expenses.show');
     Route::get('/expenses/{budget}', [ExpenseController::class, 'getExpensesByBudget']);
     Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');

@@ -59,14 +59,17 @@ class ReviewController extends Controller
         $receipt = Receipt::findOrFail($review->receipt_id);
         $budget = $receipt->budget;
 
+        //Correct the budget rest total
         $difference = floatval($request->total) - floatval($receipt->total);
         $budget->rest_amount -= $difference;
         $budget->save();
         
+        //Update the receipt
         $receipt->total = floatval($request->total);
+        $receipt->total_verified = 1;
         $receipt->save();
 
-        $review->total = $request->total;
+        //Update the receipt review
         $review->status = 'completed';
         $review->save();
 

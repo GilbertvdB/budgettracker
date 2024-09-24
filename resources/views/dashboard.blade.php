@@ -78,9 +78,16 @@
                     <div class="flex justify-between pt-1">
                         <strong class="text-xl pl-2">{{ $budget->title }}</strong>
                         
-                        <!-- Modal actions-->
-                        <div>
-                            @include('budgets.partials.modal-actions')
+                        <div class="flex">
+                            @if($budget->hasReceiptInReview)
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-red-500">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                                </svg>
+                            @endif
+                            <!-- Modal actions-->
+                            <div>
+                                @include('budgets.partials.modal-actions')
+                            </div>
                         </div>
                     </div>
                     <div class="flex space-x-2 items-center px-2">
@@ -133,6 +140,24 @@
                                         <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
                                     </svg>
                                     <p class="text-white text-lg ml-4">Upload complete!</p>
+                                </div>
+                                <div id="verify-amount" class="hidden">
+                                    <div class="flex flex-col items-center border rounded-lg p-2 text-white bg-white dark:text-gray-300 dark:bg-gray-700">
+                                            <p>Correct total?</p>
+                                            <strong id="receipt_total" class="text-xl">XX</strong>
+                                            <div class="flex space-x-1">
+                                            <button onclick="uploadTotalCorrect()" class="mt-2 bg-green-500 text-white rounded px-4 py-1">{{ __('Yes')}}</button>
+                                            
+                                            <!-- Form to handle 'No' -->
+                                            <form id="incorrect-total-form" action="{{ route('upload.total.incorrect') }}" method="POST" class="inline-block">
+                                                @csrf
+                                                <input type="hidden" name="receipt_id" id="receipt_id_input" value="">
+                                                <button type="submit" class="mt-2 bg-red-500 text-white rounded px-4 py-1">
+                                                    {{ __('No') }}
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -282,22 +307,18 @@ function uploadImageToServer(formData) {
         })
         .then(response => response.json())
         .then(data => {
-            // Append debug messages
-            // debugElement.innerText += 'Response received\n';
-            // debugElement.innerText += `Response data: ${JSON.stringify(data)}\n`;
-            
             // Hide the loading spinner
             document.getElementById('spinner').classList.add('hidden');
 
             // Handle success response
             if (data.success) {
-                // Show the green checkmark for success
-                document.getElementById('success-checkmark').classList.remove('hidden');
-
-                // Optionally refresh after a delay
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000); // Delay for 2 seconds before refreshing
+                //Update with the receipt total
+                const receiptTotalElement = document.getElementById('receipt_total');
+                receiptTotalElement.innerText = data.receipt_total;
+                //Add receipt id to the hidden form input
+                document.getElementById('receipt_id_input').value = data.receipt_id;
+                //Show the verify container
+                document.getElementById('verify-amount').classList.remove('hidden');
             } else {
                 alert('Upload failed. Please try again.');
             }
@@ -306,14 +327,20 @@ function uploadImageToServer(formData) {
             // Hide the loading spinner
             document.getElementById('loading').classList.add('hidden');
 
-            // Append error messages
-            // debugElement.innerText += 'Error occurred\n';
-            // debugElement.innerText += `Error message: ${error.message}\n`;
-
             // Handle error
             console.error('Error uploading file:', error);
             alert('An error occurred. Please try again.');
         });
+}
+
+function uploadTotalCorrect()
+{   
+    document.getElementById('verify-amount').classList.add('hidden');
+    document.getElementById('success-checkmark').classList.remove('hidden');
+
+    setTimeout(() => {
+        window.location.reload();
+    }, 2000);
 }
 
 </script>

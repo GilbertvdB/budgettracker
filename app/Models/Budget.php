@@ -68,4 +68,9 @@ class Budget extends Model
                     ->where('budget_id', $this->id) // Ensure it's for this specific budget
                     ->exists();
     }
+
+    public function getHasReceiptInReviewAttribute()
+    {   
+        return $this->receipts()->where('total_verified', 0)->exists() ? 1 : 0;
+    }
 }
