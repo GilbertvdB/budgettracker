@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\LoginRequest;
+use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use PhpParser\Node\Stmt\TryCatch;
 
 class AdminAuthController extends Controller
 {   
@@ -24,17 +26,20 @@ class AdminAuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
+        try {
+            if (Auth::guard('admin')->attempt($credentials)) {
+                
+                $request->session()->regenerate();
 
-        if (Auth::guard('admin')->attempt($credentials)) {
-            
-            $request->session()->regenerate();
+                return redirect()->intended(route('admin.dashboard', absolute: false));
+            }
 
-            return redirect()->intended(route('admin.dashboard', absolute: false));
+            return back()->withErrors([
+                'email' => 'The provided credentials do not match our records.',
+            ]);
+        } catch (Exception $e) {
+            info('Caught admin login exception: ',  $e->getMessage(), "\n");
         }
-
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
     }
 
     /**
