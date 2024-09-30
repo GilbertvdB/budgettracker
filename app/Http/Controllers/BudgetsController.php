@@ -156,6 +156,8 @@ class BudgetsController extends Controller
         //create a token
         $token = Str::random(24);
         $shareRequest->token = $token;
+        info('======= Invitation token =======');
+        info($token);
         $shareRequest->save();
         
         //dispathEvent send invited user a mail.
