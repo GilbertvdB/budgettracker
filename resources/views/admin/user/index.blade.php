@@ -13,10 +13,10 @@
     <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
 
         <!-- display table -->
-        <div class="container mx-auto">
+        <div class="container mx-auto overflow-x-auto">
 
             @if ($users->isEmpty())
-                <p class="text-gray-700">No users available.</p>
+                <p class="text-gray-700 dark:text-white">No users available.</p>
             @else
                 <table class="min-w-full bg-white rounded-t-lg">
                     <thead>

@@ -13,7 +13,7 @@
     <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
 
         <!-- display table -->
-        <div class="container mx-auto">
+        <div class="container mx-auto overflow-x-auto">
 
             @if ($feedbacks->isEmpty())
                 <p class="text-gray-700 dark:text-white">No feedbacks available.</p>

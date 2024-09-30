@@ -13,8 +13,10 @@ class Receipt extends Model
         'user_id',
         'budget_id',
         'total',
+        'total_verified',
         'name',
-        'url'
+        'url',
+        'ocr_text',
     ];
 
     public function user()

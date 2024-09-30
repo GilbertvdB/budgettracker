@@ -13,7 +13,7 @@
     <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
 
         <!-- display table -->
-        <div class="container mx-auto">
+        <div class="container mx-auto overflow-x-auto">
 
             @if ($reviews->isEmpty())
                 <p class="text-gray-700 dark:text-white">No reviews available.</p>
@@ -31,7 +31,7 @@
                         @foreach ($reviews as $review)
                             <tr class="odd:bg-gray-50 even:bg-white hover:bg-indigo-50 text-left">
                                 <td class="py-4 px-4 border-b border-gray-300">{{ $review->id }}</td>
-                                <td class="py-4 px-4 border-b border-gray-300">{{ $review->total }}</td>
+                                <td class="py-4 px-4 border-b border-gray-300">{{ $review->receipt->total }}</td>
                                 <td class="py-4 px-4 border-b border-gray-300">{{ $review->status }}</td>
                                 <td class="py-2 px-4 border-b border-gray-300">
                                     <a href="{{ route('admin.reviews.edit', $review->id) }}" class="text-blue-600 hover:text-blue-800">

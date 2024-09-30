@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use Exception;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\App;
 
@@ -65,10 +64,15 @@ class ExpenseController extends Controller
             $imagePath = public_path('storage/'.$receipt->url);
             info('img path: '.$imagePath);
     
-            $totalsArray = $this->ocr($imagePath, $receipt);
+            $processedReceiptText = $this->ocr($imagePath);
+         
+            $totalsArray = $this->extractTotalAmountFromString($processedReceiptText);
+            info('totalArray:');
+            info($totalsArray);
             $total = $totalsArray[0] ?? 0;
             info('total: '.$total);
-    
+            
+            $receipt->ocr_text = $processedReceiptText;
             $receipt->total = $total;
             $receipt->save();
             
@@ -85,10 +89,12 @@ class ExpenseController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'File uploaded successfully!',
+            'receipt_total' => $receipt->total,
+            'receipt_id' => $receipt->id,
         ], 200);
     }
 
-    public function ocr($imagePath, $receipt)
+    public function ocr($imagePath)
     {   
         try {
 
@@ -99,54 +105,15 @@ class ExpenseController extends Controller
                 $ocr->executable($path);
             }
             
+            $ocr->psm(6);
+            $ocr->oem(3);
             $text = $ocr->run();
-            
-            // dd($text);
-            $processed = $this->extractTotalAmountFromString($text);
-            if($processed == "No matching totals found.")
-            { 
-                info($processed);
-                // todo log item for review
-                Review::create([
-                    'receipt_id' => $receipt->id,
-                    'image_url' => $receipt->url,
-                    'ocr_text' => $text,
-                    'total' => 0,
-                ]);
-                
-                return null;
-            } else {
-                return $processed;
-            }
 
+            return $text;
 
         } catch (Exception $e) {
             info('error :' . $e->getMessage());
         }
-    }
-
-    public function extractTotalsFromArray($lines)
-    {
-        // Initialize an array to store the extracted totals
-        $totals = [];
-
-        // Regular expression pattern to match "Totaal" followed by an amount (xx,xx or xxx,xx)
-        $pattern = '/\bTotaal\s+(\d{1,3}[.,]\d{2})/i';
-
-        // Loop through each line in the array
-        foreach ($lines as $line) {
-            // Use preg_match to find the pattern and capture the amount
-            if (preg_match($pattern, $line, $matches)) {
-                // Remove commas and convert to proper float format (e.g. "43,16" -> "43.16")
-                $amount = str_replace(',', '.', $matches[1]);
-
-                // Add the extracted amount to the totals array
-                $totals[] = $amount;
-            }
-        }
-
-        // Return the array of extracted totals
-        return $totals;
     }
 
     function extractTotalAmountFromString($text)
@@ -185,8 +152,9 @@ class ExpenseController extends Controller
         }
         info('totals extracted:');
         info($totals);
-        // Return the array of extracted totals, or a message if no totals are found
-        return !empty($totals) ? $totals : "No matching totals found.";
+        // Return the array of extracted totals, or null if no totals are found
+        // return !empty($totals) ? $totals : "No matching totals found.";
+        return !empty($totals) ? $totals : null;
     }
 
 
@@ -199,5 +167,18 @@ class ExpenseController extends Controller
         return response()->json([
             'expenses' => $expenses
         ]);
+    }
+
+    public function uploadTotalIncorrect(Request $request)
+    {   
+        $receipt = Receipt::find($request->receipt_id);
+        $receipt->total_verified = 0;
+        $receipt->save();
+
+        Review::create([
+            'receipt_id' => $receipt->id,
+        ]);
+
+        return to_route('dashboard')->with('success', 'Receipt in review!');
     }
 }
