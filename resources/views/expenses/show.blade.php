@@ -31,7 +31,7 @@
                     </div>
                     <small>by {{ $expense->user->email }}</small>
                     <div class="flex justify-between pt-2">
-                        <a href="{{ url($expense->url ) }}" target="_blank">
+                        <a href="{{ asset($expense->url ) }}" target="_blank">
                             <img src="https://placehold.co/30" alt="receipt-icon">
                         </a>
                         <span class="text-xl">{{ $expense->total }}</span>
