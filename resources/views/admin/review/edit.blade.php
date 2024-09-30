@@ -4,7 +4,7 @@
             <!-- Left Column (Receipt Image) -->
             <div class="w-full sm:w-1/2 border box-border">
                 <div class="receipt-image border">
-                    <img src="{{ asset($review->receipt->url) }}" alt="receipt-img" class="w-full">
+                    <img src="{{ asset('storage/'.$review->receipt->url) }}" alt="receipt-img" class="w-full">
                 </div>
             </div>
 
