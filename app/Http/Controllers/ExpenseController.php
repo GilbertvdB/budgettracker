@@ -123,7 +123,7 @@ class ExpenseController extends Controller
         $totals = [];
 
         // Pattern to match variations of "Total" or "Totaal" followed by an amount (xx,xx, x,xx, xx xx format)
-        $pattern = '/\b(total|totaal)\s*[.:\-]?\s*(\d{1,3}(?:[.,\s]\d{2}))\b/i';
+        $pattern = '/\b(total|totaal)\s*[.:\-]?\s*[\€\$\£]?\s*(\d{1,3}(?:[.,\s]\d{3})*[.,]\d{2})\b/i';
 
         // Split the input text into lines
         $lines = explode("\n", $text);
