@@ -144,15 +144,15 @@
                                 <div id="verify-amount" class="hidden">
                                     <div class="flex flex-col items-center border rounded-lg p-2 text-white bg-white dark:text-gray-300 dark:bg-gray-700">
                                             <p>Correct total?</p>
-                                            <strong id="receipt_total" class="text-xl">XX</strong>
-                                            <div class="flex space-x-1">
-                                            <button onclick="uploadTotalCorrect()" class="mt-2 bg-green-500 text-white rounded px-4 py-1">{{ __('Yes')}}</button>
+                                            <strong id="receipt_total" class="text-2xl">XX</strong>
+                                            <div class="flex space-x-2">
+                                            <button onclick="uploadTotalCorrect()" class="mt-2 bg-green-500 text-white rounded px-4 py-2">{{ __('Yes')}}</button>
                                             
                                             <!-- Form to handle 'No' -->
                                             <form id="incorrect-total-form" action="{{ route('upload.total.incorrect') }}" method="POST" class="inline-block">
                                                 @csrf
                                                 <input type="hidden" name="receipt_id" id="receipt_id_input" value="">
-                                                <button type="submit" class="mt-2 bg-red-500 text-white rounded px-4 py-1">
+                                                <button type="submit" class="mt-2 bg-red-500 text-white rounded px-4 py-2">
                                                     {{ __('No') }}
                                                 </button>
                                             </form>
