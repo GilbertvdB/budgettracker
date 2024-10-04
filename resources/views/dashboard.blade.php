@@ -123,7 +123,8 @@
                         <div class="flex flex-col-l h-full px-2">
                             <form id="uploadForm-{{ $budget->id }}" action="{{ route('upload.receipt', $budget->id ) }}" method="POST" enctype="multipart/form-data" data-budget-id="{{ $budget->id }}">
                                 @csrf
-                                <input type="file" name="receipt" id="receipt-{{ $budget->id }}" class="my-image-field hidden" onchange="compressAndUploadImage(event)" accept="image/*" capture="environment">
+                                <!-- <input type="file" name="receipt" id="receipt-{{ $budget->id }}" class="my-image-field hidden" onchange="compressAndUploadImage(event)" accept="image/*" capture="environment"> -->
+                                <input type="file" name="receipt" id="receipt-{{ $budget->id }}" class="my-image-field hidden" onchange="compressAndUploadImage(event)" accept="capture=camera,image/*">
                             </form>
 
                             <!-- Loading Spinner (initially hidden) -->
