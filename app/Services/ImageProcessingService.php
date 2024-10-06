@@ -6,8 +6,12 @@ use Illuminate\Support\Facades\Storage;
 
 class ImageProcessingService
 {
-    public function preprocess($imagePath)
-    {
+    public function preprocess($receiptUrl)
+    {   
+        //create the imagePath from the receipt Url
+        $imagePath = public_path('storage/'.$receiptUrl);
+        info('img path: '.$imagePath);
+        
         // Load the image
         $image = imagecreatefromjpeg($imagePath); // Change this based on the image type
 

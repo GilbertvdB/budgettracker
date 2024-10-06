@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UploadReceiptRequest;
 use App\Models\Budget;
 use App\Models\Receipt;
 use App\Models\Review;
@@ -13,14 +14,20 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\App;
 use App\Services\ImageProcessingService;
+use App\Services\OcrProcessingService;
+use App\Services\ExtractTotalService;
 
 class ExpenseController extends Controller
 {   
     protected $imageProcessingService;
+    protected $ocrProcessingService;
+    protected $extractTotalService;
 
-    public function __construct(ImageProcessingService $imageProcessingService)
+    public function __construct(ImageProcessingService $imageProcessingService, OcrProcessingService $ocrProcessingService, ExtractTotalService $extractTotalService )
     {
         $this->imageProcessingService = $imageProcessingService;
+        $this->ocrProcessingService = $ocrProcessingService;
+        $this->extractTotalService = $extractTotalService;
     }
 
     public function index()
@@ -35,15 +42,9 @@ class ExpenseController extends Controller
         return view('expenses.show', compact('budget', 'expenses'));
     }
     
-    public function uploadReceipt(Request $request): JsonResponse
+    public function uploadReceipt(UploadReceiptRequest $request): JsonResponse
     {   
-        // Validate the image input
         info($request->all());
-
-        $request->validate([
-            'receipt' => 'required|image|mimes:jpeg,png,jpg,gif|max:2024', // Restricting file types and size
-            'budget_id' => 'required', // Restricting file types and size
-        ]);
 
         // Find the budget by ID
         $budget = Budget::find($request->budget_id);
@@ -55,8 +56,6 @@ class ExpenseController extends Controller
         }
 
         // Store the image in the 'receipts' directory in the public disk
-        // $path = $request->file('receipt')->store('receipts', 'public');
-
         if ($request->hasFile('receipt')) {
             $filename = date('Y_m_d_His') . '_' . str_replace(' ', '', $request->file('receipt')->hashName());
             $request->file('receipt')->storePubliclyAs('images/receipts/', $filename, 'public');
@@ -68,28 +67,13 @@ class ExpenseController extends Controller
                 'url' => 'images/receipts/' . $filename,
             ]);
             $receipt->save();
+        }
 
-            $imagePath = public_path('storage/'.$receipt->url);
-            info('img path: '.$imagePath);
-            $processedImagePath = $this->imageProcessingService->preprocess($imagePath);
+        // process the uploaded receipt
+        if($receipt) {
 
-            $processedReceiptText = $this->ocr($processedImagePath);
-         
-            $totalsArray = $this->extractTotalAmountFromString($processedReceiptText);
-            info('totalArray:');
-            info($totalsArray);
-            $total = $totalsArray[0] ?? 0;
-            info('total: '.$total);
-            
-            $receipt->ocr_text = $processedReceiptText;
-            $receipt->total = $total;
-            $receipt->save();
-            
-            $budget->rest_amount -= floatval($total);
-            $budget->save();
+            $this->processReceipt($receipt);
 
-            // Clean up temporary files
-            @unlink($processedImagePath);
         } else {
             return response()->json([
                 'success' => false,
@@ -104,6 +88,31 @@ class ExpenseController extends Controller
             'receipt_total' => $receipt->total,
             'receipt_id' => $receipt->id,
         ], 200);
+    }
+
+    public function processReceipt(Receipt $receipt)
+    {
+        // initiate srvices
+        $processedImagePath = $this->imageProcessingService->preprocess($receipt->url);
+        $processedReceiptText = $this->ocrProcessingService->processImagePath($processedImagePath);
+        $totalsArray = $this->extractTotalService->extractTotalAmountFromString($processedReceiptText);
+
+        info('totalArray:');
+        info($totalsArray);
+        $total = $totalsArray[0] ?? 0;
+        info('total: '.$total);
+        
+        //update the receipt information
+        $receipt->ocr_text = $processedReceiptText;
+        $receipt->total = $total;
+        $receipt->save();
+        
+        //update the budgets rest amount
+        $receipt->budget->rest_amount -= floatval($total);
+        $receipt->budget->save();
+
+        // Clean up temporary files
+        @unlink($processedImagePath);
     }
 
     public function ocr($imagePath)
