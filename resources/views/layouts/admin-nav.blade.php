@@ -36,6 +36,11 @@
                         {{ __('Feedbacks') }}
                     </x-nav-link>
                 </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('admin.ocr.index')" :active="request()->routeIs('admin.ocr.*')">
+                        {{ __('Ocr Env') }}
+                    </x-nav-link>
+                </div>
             </div>
 
             <!-- Settings Dropdown -->
@@ -110,6 +115,11 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('admin.feedbacks.index')" :active="request()->routeIs('admin.feedbacks.*')">
                 {{ __('Feedbacks') }}
+            </x-responsive-nav-link>
+        </div>
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('admin.ocr.index')" :active="request()->routeIs('admin.ocr.*')">
+                {{ __('Ocr Env') }}
             </x-responsive-nav-link>
         </div>
 
