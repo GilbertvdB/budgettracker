@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminOcrController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\ReviewController;
@@ -20,6 +21,8 @@ Route::name('admin.')->prefix('admin')->middleware('auth:admin')->group(function
 
     Route::resource('users', AdminUserController::class);
     Route::resource('reviews', ReviewController::class);
+    Route::post('upload-image', [AdminOcrController::class, 'uploadImage'])->name('upload.image');
+    Route::resource('ocr', AdminOcrController::class);
     Route::post('logout', [AdminAuthController::class, 'destroy'])->name('logout');
 
     Route::get('feedbacks', [FeedbackController::class, 'index'])->name('feedbacks.index');
