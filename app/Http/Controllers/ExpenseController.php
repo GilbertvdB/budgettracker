@@ -8,11 +8,8 @@ use App\Models\Receipt;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use thiagoalessio\TesseractOCR\TesseractOCR;
-use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\App;
 use App\Services\ImageProcessingService;
 use App\Services\OcrProcessingService;
 use App\Services\ExtractTotalService;
@@ -115,29 +112,8 @@ class ExpenseController extends Controller
         @unlink($processedImagePath);
     }
 
-    public function ocr($imagePath)
-    {   
-        try {
 
-            $ocr = new TesseractOCR($imagePath);
-            
-            if (App::environment('local')) {
-                $path = env('OCR_LOCAL');
-                $ocr->executable($path);
-            }
-            
-            $ocr->psm(6);
-            $ocr->oem(3);
-            $text = $ocr->run();
-
-            return $text;
-
-        } catch (Exception $e) {
-            info('error :' . $e->getMessage());
-        }
-    }
-
-    function extractTotalAmountFromString1($text)
+    function extractTotalAmountFromString_og($text)
     {   
         info('init extract...');
         // Initialize an array to store the extracted totals
@@ -174,84 +150,9 @@ class ExpenseController extends Controller
         info('totals extracted:');
         info($totals);
         // Return the array of extracted totals, or null if no totals are found
-        // return !empty($totals) ? $totals : "No matching totals found.";
         return !empty($totals) ? $totals : null;
     }
 
-
-    function extractTotalAmountFromString($text)
-    {   
-        info('init extract...');
-        // Initialize an array to store the extracted totals
-        $totals = [];
-
-        // Pattern to match variations of "Total" or "Totaal" followed by an amount
-        $patternTotal = '/\b(t[0-9a-z]{1,2}tal|total|totaal|lotaal|otaal|lataal)\s*[.:\-]?\s*[\€\$\£]?\s*(\d{1,3}(?:[.,\s]?\d{3})*[.,]\d{2})\b/iu';
-        
-        // Pattern to match variations of "Pinnen" or "Pin" followed by an amount
-        $patternPin = '/\b(pinnen|pin)\s*[.:\-]?\s*[\€\$\£]?\s*(\d{1,3}(?:[.,\s]?\d{3})*[.,]\d{2})\b/iu';
-
-        // Pattern to match "emballage" with variations (e.g., "emballase")
-        $patternEmbalage = '/\b(embalage|emballase|embalges?)\b/i';
-
-        // Split the input text into lines
-        $lines = explode("\n", $text);
-        info('lines:');
-        info($lines);
-
-        // Initialize a flag to track if emballage was found
-        $embalageFound = false;
-
-        // First pass: check for "emballage"
-        foreach ($lines as $line) {
-            if (preg_match($patternEmbalage, $line)) {
-                info('emballage found in line...');
-                $embalageFound = true; // Set the flag
-                break; // Stop after finding the first occurrence
-            }
-        }
-
-        // Second pass: if emballage was found, check for "pinnen"
-        if ($embalageFound) {
-            foreach ($lines as $line) {
-                if (preg_match($patternPin, $line, $matches)) {
-                    info('matching pattern for pin...');
-                    // Extract the amount from the second capture group
-                    $amount = $matches[2];
-                    info('cleaning matches results...');
-                    // Clean the amount
-                    $amount = str_replace(' ', '.', $amount);  // Replace spaces between numbers with periods
-                    $amount = str_replace(',', '.', $amount);  // Convert comma to period as decimal separator
-
-                    // Add the extracted amount to the totals array
-                    $totals[] = $amount;
-                }
-            }
-        } 
-        // If "emballage" was NOT found, look for "total"
-        else {
-            foreach ($lines as $line) {
-                if (preg_match($patternTotal, $line, $matches) && strpos($line, 'sub') === false) {
-                    info('matching pattern for total and filtering...');
-                    // Extract the amount from the second capture group
-                    $amount = $matches[2];
-                    info('cleaning matches results...');
-                    // Clean the amount
-                    $amount = str_replace(' ', '.', $amount);  // Replace spaces between numbers with periods
-                    $amount = str_replace(',', '.', $amount);  // Convert comma to period as decimal separator
-
-                    // Add the extracted amount to the totals array
-                    $totals[] = $amount;
-                }
-            }
-        }
-
-        info('totals extracted:');
-        info($totals);
-        
-        // Return the array of extracted totals, or null if no totals are found
-        return !empty($totals) ? $totals : null;
-    }
 
     public function getExpensesByBudget($budgetId)
     {
@@ -266,6 +167,7 @@ class ExpenseController extends Controller
 
     public function uploadTotalIncorrect(Request $request)
     {   
+        //flag the reciept as having incorrect total amount
         $receipt = Receipt::find($request->receipt_id);
         $receipt->total_verified = 0;
         $receipt->save();

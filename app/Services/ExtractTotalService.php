@@ -79,4 +79,6 @@ class ExtractTotalService
         // Return the array of extracted totals, or null if no totals are found
         return !empty($totals) ? $totals : null;
     }
+
+    
 }
