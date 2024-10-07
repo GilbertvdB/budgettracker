@@ -69,6 +69,19 @@ class ExtractTotalService
 
                     // Add the extracted amount to the totals array
                     $totals[] = $amount;
+                } else {
+                    if (preg_match($patternPin, $line, $matches)) {
+                        info('matching pattern for pin...');
+                        // Extract the amount from the second capture group
+                        $amount = $matches[2];
+                        info('cleaning matches results...');
+                        // Clean the amount
+                        $amount = str_replace(' ', '.', $amount);  // Replace spaces between numbers with periods
+                        $amount = str_replace(',', '.', $amount);  // Convert comma to period as decimal separator
+    
+                        // Add the extracted amount to the totals array
+                        $totals[] = $amount;
+                    }
                 }
             }
         }
@@ -80,5 +93,5 @@ class ExtractTotalService
         return !empty($totals) ? $totals : null;
     }
 
-    
+
 }
