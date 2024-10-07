@@ -66,7 +66,7 @@ class AdminOcrController extends Controller
     {   
         $imagePath = session('compressed_image_path');
         // Preprocess the image
-        $processedImagePath = $this->imageProcessingService->preprocess(public_path('storage/'.$imagePath));
+        $processedImagePath = $this->imageProcessingService->preprocess($imagePath);
 
         session(['processed_image' => $processedImagePath]);
 

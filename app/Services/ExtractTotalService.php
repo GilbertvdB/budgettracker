@@ -13,10 +13,10 @@ class ExtractTotalService
         $totals = [];
 
         // Pattern to match variations of "Total" or "Totaal" followed by an amount
-        $patternTotal = '/\b(t[0-9a-z]{1,2}tal|total|totaal|lotaal|otaal|lataal)\s*[.:\-]?\s*[\€\$\£]?\s*(\d{1,3}(?:[.,\s]?\d{3})*[.,]\d{2})\b/iu';
+        $patternTotal = '/\b(t[0-9a-z]{1,2}tal|total|totaal|lotaal|otaal|lataal|pinnen|pin|pinwen|piwnen)\s*[.:\-]?\s*[\€\$\£]?\s*(\d{1,3}(?:[.,\s]?\d{3})*[.,]\d{2})\b/iu';
         
         // Pattern to match variations of "Pinnen" or "Pin" followed by an amount
-        $patternPin = '/\b(pinnen|pin)\s*[.:\-]?\s*[\€\$\£]?\s*(\d{1,3}(?:[.,\s]?\d{3})*[.,]\d{2})\b/iu';
+        $patternPin = '/\b(pinnen|pin|pinwen|piwnen)\s*[.:\-]?\s*[\€\$\£]?\s*(\d{1,3}(?:[.,\s]?\d{3})*[.,]\d{2})\b/iu';
 
         // Pattern to match "emballage" with variations (e.g., "emballase")
         $patternEmbalage = '/\b(embalage|emballase|embalges?)\b/i';
@@ -58,7 +58,7 @@ class ExtractTotalService
         // If "emballage" was NOT found, look for "total"
         else {
             foreach ($lines as $line) {
-                if (preg_match($patternTotal, $line, $matches) && strpos($line, 'sub') === false) {
+                if (preg_match($patternTotal, $line, $matches) && strpos(strtolower($line), 'sub') === false) {
                     info('matching pattern for total and filtering...');
                     // Extract the amount from the second capture group
                     $amount = $matches[2];
@@ -69,19 +69,6 @@ class ExtractTotalService
 
                     // Add the extracted amount to the totals array
                     $totals[] = $amount;
-                } else {
-                    if (preg_match($patternPin, $line, $matches)) {
-                        info('matching pattern for pin...');
-                        // Extract the amount from the second capture group
-                        $amount = $matches[2];
-                        info('cleaning matches results...');
-                        // Clean the amount
-                        $amount = str_replace(' ', '.', $amount);  // Replace spaces between numbers with periods
-                        $amount = str_replace(',', '.', $amount);  // Convert comma to period as decimal separator
-    
-                        // Add the extracted amount to the totals array
-                        $totals[] = $amount;
-                    }
                 }
             }
         }

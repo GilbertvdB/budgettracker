@@ -16,26 +16,26 @@
                 </div>
             </div>
 
-            <!-- OCR Text Column -->
+            <!-- Total display Column -->
             <div class="w-full sm:w-1/2 border box-border">
-                <div class="ocr-text border">
-                    <div class="text-xs sm:text-base p-4 rounded-lg bg-gray-700 text-green-500 h-full">
-                    @if(session('ocr_text'))
-                        <pre> {{session('ocr_text')}}</pre>
-                    @endif
+                <div class="max-w-2xl mx-auto p-2">
+                    <div class="w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl shadow-lg p-4">
+                    @if(session('total'))
+                        <strong>Total is: </strong>
+                        @foreach( session('total') as $total)
+                            {{$total}}
+                        @endforeach
+                    @endif 
                     </div>
                 </div>
 
-                <!-- Correction Form Column -->
-                <div class="py-1">
-                    <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
-                        <div class="w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl shadow-lg p-4 mb-4">
-                        @if(session('total'))
-                            <strong>Total is: </strong>
-                            @foreach( session('total') as $total)
-                                {{$total}}
-                            @endforeach
-                        @endif 
+                <!-- OCR Text Column -->
+                <div class="py-0">
+                    <div class="ocr-text border">
+                        <div class="text-xs sm:text-base p-4 rounded-lg bg-gray-700 text-green-500 h-full">
+                        @if(session('ocr_text'))
+                            <pre> {{session('ocr_text')}}</pre>
+                        @endif
                         </div>
                     </div>
                 </div>
