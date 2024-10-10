@@ -216,13 +216,12 @@ class BudgetsController extends Controller
 
     public function unshare(Budget $budget): View
     {   
-        // dd($budget->users);
         return view('budgets.unshare', compact('budget'));
     }
 
     public function unshareBudget(Request $request, Budget $budget): RedirectResponse
     {   
-        $user = User::find($request->email);
+        $user = User::where('email', $request->email)->first();
         $user->budgets()->detach($budget->id);
     
         return redirect()->route('dashboard')->with('success', 'No longer sharing with user!');
