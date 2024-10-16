@@ -164,6 +164,7 @@ class BudgetsController extends Controller
 
         // Generate the invitation link
         $inviteLink = route('budgets.invitation.accept', $token);
+        info($inviteLink);
 
         // Optionally, send the invitation via email
         Mail::to($request->email)->send(new ShareBudgetInvite($inviteLink, Auth::user()->email, $budget->title));
