@@ -22,7 +22,6 @@ class Budget extends Model
         'title', 
         'amount', 
         'rest_amount',
-        'max_share_users'
     ];
 
     public function users(): BelongsToMany
@@ -44,6 +43,7 @@ class Budget extends Model
     public function getSharedUsersEmailAttribute()
     {   
         $authUserEmail = Auth::user()->email;
+        // $authUserEmail = "admin@mail.com";
 
         $emails = $this->users()
                     ->where('email', '!=', $authUserEmail)

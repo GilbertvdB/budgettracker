@@ -49,6 +49,8 @@ Route::middleware('auth')->group(function () {
  
 //     return new App\Mail\ShareBudgetInvite($inviteLink, $fromEmail, $budget->title);
 // });
+use App\Http\Controllers\ApiLoginController;
+Route::post('/api/login', [ApiLoginController::class, 'authenticate'])->middleware('guest');
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';
