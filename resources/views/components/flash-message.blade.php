@@ -59,7 +59,7 @@
   // Auto-close after 4 seconds
   setTimeout(() => {
     closeAlert();
-  }, 20000);
+  }, 4000);
   
   function closeAlert() {
     const alert = document.getElementById('alertMessage');
