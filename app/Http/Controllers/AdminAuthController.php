@@ -38,7 +38,7 @@ class AdminAuthController extends Controller
                 'email' => 'The provided credentials do not match our records.',
             ]);
         } catch (Exception $e) {
-            info('Caught admin login exception: ',  $e->getMessage(), "\n");
+            info('Caught admin login exception:', ['message' => $e->getMessage()]);
         }
     }
 
