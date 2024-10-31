@@ -1,9 +1,13 @@
-@if(session('success'))
+@if(session('success') || session('error'))
 <div id="alertMessage" class="slide-in-right">
-    <div class="bg-blue-500 px-2 py-1 rounded-xl fixed right-4 top-4 z-50 w-72 space-y-2 mt-4" role="alert">
+    <div class="{{ session('error') ? 'bg-red-500' : 'bg-blue-500' }} px-2 py-1 rounded-xl fixed right-4 top-4 z-50 w-72 space-y-2 mt-4" role="alert">
         <div class="flex justify-between items-center">
             <div class="text-white px-4 py-3">
+              @if(session('success'))
                 <span class="block sm:inline">{{ session('success') }}</span>
+              @else
+                <span class="block sm:inline">{{ session('error') }}</span>
+              @endif  
             </div>
             <span onclick="closeAlert()">
                 <svg class="fill-current h-6 w-6 text-white" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -55,7 +59,7 @@
   // Auto-close after 4 seconds
   setTimeout(() => {
     closeAlert();
-  }, 4000);
+  }, 20000);
   
   function closeAlert() {
     const alert = document.getElementById('alertMessage');

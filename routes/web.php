@@ -23,7 +23,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/budgets/{budget}/share', [BudgetsController::class, 'share'])->name('budgets.share');
     Route::get('/budgets/{budget}/unshare', [BudgetsController::class, 'unshare'])->name('budgets.unshare');
     Route::post('/budgets/{budget}/unshare', [BudgetsController::class, 'unshareBudget'])->name('budgets.unshareBudget');
-    Route::post('/budgets/{budget}/share-budget', [BudgetsController::class, 'shareBudgetInvitation'])->name('budgets.shareBudgetInvitation');
+    // Route::post('/budgets/{budget}/share-budget', [BudgetsController::class, 'shareBudgetInvitation'])->name('budgets.shareBudgetInvitation');
+    Route::post('/budgets/{budget}/share-budget', [BudgetsController::class, 'shareBudgetTemp'])->name('budgets.shareBudgetInvitation'); // temp sharing
     
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

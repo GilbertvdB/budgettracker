@@ -175,6 +175,20 @@ class BudgetsController extends Controller
         return to_route('dashboard')->with('success', 'Budget share e-mail invitation link send!');
     }
 
+    public function ShareBudgetTemp(Request $request, Budget $budget): RedirectResponse
+    {
+        $invitedUser = User::where('email', $request->email)->first();
+
+        if($invitedUser)
+        {
+            $budget->users()->attach($invitedUser->id);
+            
+            return to_route('dashboard')->with('success', 'Budget shared with user!');
+        }
+
+        return to_route('dashboard')->with('error', 'Couldnt find user '.$request->email);
+    }
+
     public function acceptInvitation($token)
     {   
         // dd($token);

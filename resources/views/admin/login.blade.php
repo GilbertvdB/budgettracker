@@ -2,7 +2,7 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <p class="text-gray-800 dark:text-gray-300">Welcome Admin</p>
+    <p class="text-gray-800 dark:text-gray-300">Welcome Budget Admin</p>
     <form method="POST" action="{{ route('admin.login') }}">
         @csrf
 
