@@ -8,7 +8,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use PhpParser\Node\Stmt\TryCatch;
 
 class AdminAuthController extends Controller
 {   
@@ -26,11 +25,12 @@ class AdminAuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
+
         try {
             if (Auth::guard('admin')->attempt($credentials)) {
-                
-                $request->session()->regenerate();
 
+                $request->session()->regenerate();
+                
                 return redirect()->intended(route('admin.dashboard', absolute: false));
             }
 
