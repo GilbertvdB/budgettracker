@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use App\Services\ImageProcessingService;
 use App\Services\OcrProcessingService;
 use App\Services\ExtractTotalService;
+use Illuminate\Http\RedirectResponse;
 
 class ExpenseController extends Controller
 {   
@@ -30,6 +31,29 @@ class ExpenseController extends Controller
     public function index()
     {   
         //
+    }
+
+    public function create(Budget $budget): View
+    {
+        return view('expenses.create', compact('budget'));
+    }
+
+    public function store(Request $request): RedirectResponse
+    {   
+        $validated = $request->validate([ 
+            'name' => 'string|max:255',
+            'total' => 'required|min:1|decimal:0,2',
+            'budget_id' => 'required'
+        ]);
+
+        $validated['user_id'] = $request->user()->id;
+        $receipt = Receipt::create($validated);
+
+        //update the budgets rest amount
+        $receipt->budget->rest_amount -= floatval($receipt->total);
+        $receipt->budget->save();
+
+        return to_route('expenses.show', ['budget' => $request->budget_id])->with('success', 'Receipt created successfully.');
     }
 
     public function show(Budget $budget): View

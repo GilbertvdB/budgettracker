@@ -33,11 +33,12 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/upload-receipt', [ExpenseController::class, 'uploadReceipt'])->name('upload.receipt');
     Route::post('/upload-incorrect', [ExpenseController::class, 'uploadTotalIncorrect'])->name('upload.total.incorrect');
+    Route::get('/expenses/{budget}/create', [ExpenseController::class, 'create'])->name('expenses.create');
     Route::get('/expenses/{budget}/show', [ExpenseController::class, 'show'])->name('expenses.show');
     Route::get('/expenses/{budget}', [ExpenseController::class, 'getExpensesByBudget']);
     Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
 
-    Route::resource('/expenses', ExpenseController::class)->except(['index', 'show']);
+    Route::resource('/expenses', ExpenseController::class)->except(['index', 'show', 'create']);
     Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 });
 

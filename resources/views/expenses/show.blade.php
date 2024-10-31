@@ -4,15 +4,23 @@
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-300 leading-tight">
                 {{ __('Expenses') }}
             </h2>
-            <x-action-button>
-            <a href="{{ url()->previous() }}">
-                {{ __('Back') }}
-            </a>
-            </x-action-button>
+            <div class="flex space-x-2">
+                <x-primary-button>
+                    <a href="{{ route('expenses.create', $budget) }}">
+                        {{ __('Add') }} 
+                    </a>
+                </x-primary-button>
+                <x-action-button>
+                    <a href="{{ route('dashboard') }}">
+                        {{ __('Back') }}
+                    </a>
+                </x-action-button>
+            </div>
         </div>
     </x-slot>
 
-    
+    <x-flash-message/>
+
 <div class="max-w-2xl mx-auto text-gray-800 dark:text-gray-300 p-4 sm:p-6 lg:p-8">
     @if($expenses->isEmpty())
         <span>No expenses found for the selected budget.</span>
