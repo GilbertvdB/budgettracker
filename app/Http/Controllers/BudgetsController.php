@@ -175,6 +175,8 @@ class BudgetsController extends Controller
         return to_route('dashboard')->with('success', 'Budget share e-mail invitation link send!');
     }
 
+
+    //temp solution for no mailer setup on live
     public function ShareBudgetTemp(Request $request, Budget $budget): RedirectResponse
     {
         $invitedUser = User::where('email', $request->email)->first();
@@ -191,7 +193,6 @@ class BudgetsController extends Controller
 
     public function acceptInvitation($token)
     {   
-        // dd($token);
         // Find the invitation by token
         $invitation = ShareBudgetInvitation::where('token', $token)->first();
         $budget = $invitation->budget;
@@ -208,6 +209,7 @@ class BudgetsController extends Controller
             // Mark the invitation as accepted
             $invitation->status = 'registering';
             $invitation->save();
+            
             // Redirect to the registration or invitation-acceptance page
             return redirect()->route('register')->with('message', 'Invitation accepted! Please complete your registration.');
         }
